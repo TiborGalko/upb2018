@@ -7,12 +7,14 @@
     </head>
     <body>        
         <h1>UPB 2018 zadanie 3</h1>
+        <a href="decrypt.jsp">Decrypt</a>
         <div>
             <h3>Choose file to encrypt</h3>
             <form action="upload" method="post" enctype="multipart/form-data">
-                <input type="file" name="file"> <br>                
-                Key: <input type="text" id="fname" name="fname"/><br>
-                <input type="submit" value="Upload">                
+                <input type="file" name="enc-file"> <br>                
+                RSA public key: <input type="text" id="enc-rsa-pk" name="enc-rsa-pk"/><br>
+                AES key: <input type="text" id="enc-aes" name="enc-aes"/><br>
+                <input type="submit" value="Encrypt">                
             </form>                
         </div>
     </body>
