@@ -13,7 +13,6 @@
             <form action="upload" method="post" enctype="multipart/form-data">
                 <input type="file" name="dec-file"> <br>                
                 RSA private key: <input type="text" id="dec-rsa-pk" name="dec-rsa-pk"/><br>
-                AES decrypted key: <input type="text" id="dec-aes" name="dec-aes"/><br>
                 <input type="submit" value="Decrypt">                
             </form>                
         </div>
