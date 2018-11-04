@@ -30,7 +30,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  */
 public class FileUploadHandler extends HttpServlet {
     
-    private final String UPLOAD_DIRECTORY = "C:\\Users\\h\\Documents\\upb2018";
+    private final String UPLOAD_DIRECTORY = "/usr/local/upb2018";
     
     private enum Mode {
         ENCRYPT,
