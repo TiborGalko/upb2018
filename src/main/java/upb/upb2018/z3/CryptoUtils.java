@@ -37,7 +37,6 @@ public class CryptoUtils {
 
     private static String ALGORITHM = "AES";
     private static String TRANSFORMATION = "AES/CBC/PKCS5Padding";
-    private final static String UPLOAD_PATH = "C:\\Users\\h\\Documents\\upb2018"; // Cesta k priecinku na ukladanie klucov
 
     public static void encryptAES(String rsaPK, File inputFile, File outputFile) throws Exception {
         ALGORITHM = "AES";

@@ -30,7 +30,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  */
 public class FileUploadHandler extends HttpServlet {
     
-    private final String UPLOAD_DIRECTORY = "C:\\Users\\Jurko\\Documents\\skola\\UPB\\upb2018\\files";
+    private final String UPLOAD_DIRECTORY = "C:\\Users\\h\\Documents\\upb2018";
     
     private enum Mode {
         ENCRYPT,
@@ -81,9 +81,8 @@ public class FileUploadHandler extends HttpServlet {
                             String name = new File(item.getName()).getName();
                             temp = new File(UPLOAD_DIRECTORY + File.separator + name);
                             item.write(temp);
-                            
-                            String[] parts = name.split(Pattern.quote("."));
-                            decrypted = new File(UPLOAD_DIRECTORY + File.separator + parts[0] + "." + parts[1]);
+                                                                     
+                            decrypted = new File(UPLOAD_DIRECTORY + File.separator + name.substring(0, name.length() - 4));
                             
                             //System.out.println("Enc decrypted " + decrypted.getName() + " temp " + temp.getName());
                             filename = decrypted.getName();
@@ -107,13 +106,12 @@ public class FileUploadHandler extends HttpServlet {
             response.setHeader("Content-Length", String.valueOf(file.length()));
             response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
             Files.copy(file.toPath(), response.getOutputStream());
+            deletePlainFile(file);
          
         }else{
             request.setAttribute("message",
                                  "Sorry this Servlet only handles file upload request");
-        }        
-    
-        //request.getRequestDispatcher("/result.jsp").forward(request, response);    
+        }           
     }
     
     /**
