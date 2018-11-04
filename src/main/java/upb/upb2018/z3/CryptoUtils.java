@@ -76,46 +76,22 @@ public class CryptoUtils {
         int ivSize = 16;
         byte[] iv = new byte[ivSize];
         System.arraycopy(keyFileBytes, 0, iv, 0, ivSize); // skopirovanie prvych 16 bytov do iv
-
-        int cnt = 0;
-        ArrayList<Byte> buffer = new ArrayList<>(); // buffer sa prepise do kluca ked sa najde nieco ine ako 0
-        ArrayList<Byte> encryptedKey = new ArrayList<>(); 
-        for(int i = ivSize + 1; i < keyFileBytes.length; i++) { //prechadza sa subor a zapisuje sa kluc
-            if(cnt == 8) {
-                break; // naslo sa 8 nul
-            }                
-            if(keyFileBytes[i] == 0) {
-                cnt++;                               
-                buffer.add(keyFileBytes[i]);
-            }
-            else {
-                if(cnt > 0) {
-                    for (Byte b : buffer) {
-                        encryptedKey.add(b);
-                    }
-                    buffer.clear();
-                }
-                else {
-                    encryptedKey.add(keyFileBytes[i]);
-                }
-                cnt = 0;                              
-            }         
-            //System.arraycopy(keyFileBytes, ivSize + indexOfDivider + 1, encryptedKey, 0, keySize); keyFileBytes[i]
-        }                       
-        int keySize = encryptedKey.size();
-        System.out.println("Key size " + encryptedKey.size());
         
-        int textSize = keyFileBytes.length - (ivSize + keySize + 8); 
+        int keySize = 172;
+        byte[] encryptedKey = new byte[keySize];
+        System.arraycopy(keyFileBytes, ivSize, encryptedKey, 0, keySize); // skopirovanie prvych 16 bytov do iv                
+        
+        int textSize = keyFileBytes.length - (ivSize + keySize); 
         byte[] textBytes = new byte[textSize]; // dlzka suboru bez iv
         System.arraycopy(keyFileBytes, ivSize + keySize, textBytes, 0, textSize - 1);
         
         //String fileContent = new String(Files.readAllBytes(Paths.get(inputFile.getPath())));
-        System.out.println("zasifrovany aes decrypt kluc: " + encryptedKey.toString());
-        String read = doDecrypt(rsaPK, encryptedKey.toString());
+        System.out.println("zasifrovany aes decrypt kluc: " + new String(encryptedKey));
+        String read = doDecrypt(rsaPK, new String(encryptedKey));
         System.out.println("povodny aes decrypt kluc: " + read);
         SecretKey key = new SecretKeySpec(Base64.getDecoder().decode(read), 0, Base64.getDecoder().decode(read).length, "AES");
 
-        doFileDecrypt(Cipher.DECRYPT_MODE, key, iv, inputFile, outputFile);
+        doFileDecrypt(Cipher.DECRYPT_MODE, key, iv, textBytes, outputFile);
     }
 
     private static void doFileEncrypt(int cipherMode, SecretKey key, String rsaPK, File inputFile, File outputFile) throws Exception {
@@ -142,8 +118,7 @@ public class CryptoUtils {
             // Spojenie iv, zasifrovaneho kluca a ciphertextu do jedneho pola
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             outputStream.write(iv);            
-            outputStream.write(encryptedAESKey.getBytes());
-            outputStream.write(00000000); // 8 nul na oddelenie textu a kluca
+            outputStream.write(encryptedAESKey.getBytes());            
             outputStream.write(outputBytes);
             
             byte out[] = outputStream.toByteArray();
@@ -156,14 +131,18 @@ public class CryptoUtils {
         }
     }
 
-    private static void doFileDecrypt(int cipherMode, SecretKey key, byte[] iv, File inputFile, File outputFile) throws Exception {
+    private static void doFileDecrypt(int cipherMode, SecretKey key, byte[] iv, byte[] inputBytes, File outputFile) throws Exception {
         try {
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(cipherMode, key, new IvParameterSpec(iv));
-
-            // Nacitanie vlozeneho suboru
-            byte[] inputBytes = FileUtils.readFileToByteArray(inputFile);
+            System.out.println("Desifrujem " + new String(inputBytes));
+            // Nacitanie vlozeneho subor
+                        
             byte[] outputBytes = cipher.doFinal(inputBytes);
+            
+            System.out.println("Dodesifrovane");
+            
+            System.out.println(new String(outputBytes));
 
             FileUtils.writeByteArrayToFile(outputFile, outputBytes);
 
