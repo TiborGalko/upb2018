@@ -65,7 +65,7 @@ public class FileUploadHandler extends HttpServlet {
                             item.write(temp); // zapisanie suboru do docasneho suboru
                             //encrypted = new File(UPLOAD_DIRECTORY + File.separator + name.substring(0, name.length() - 4) + ".enc");
                             encrypted = new File(UPLOAD_DIRECTORY + File.separator + name + ".enc");
-                            System.out.println("Enc encrypted " + encrypted.getName() + " temp " + temp.getName());
+                            //System.out.println("Enc encrypted " + encrypted.getName() + " temp " + temp.getName());
                             filename = encrypted.getName();
                         } else {
                             if(item.getFieldName().equals("enc-rsa-pk")) {
@@ -100,7 +100,6 @@ public class FileUploadHandler extends HttpServlet {
             } catch (Exception ex) {
                request.setAttribute("message", "File Enc/Dec Failed due to " + ex);
             }          
-            
             File file = new File(UPLOAD_DIRECTORY, filename);
             response.setHeader("Content-Type", getServletContext().getMimeType(filename));
             response.setHeader("Content-Length", String.valueOf(file.length()));
