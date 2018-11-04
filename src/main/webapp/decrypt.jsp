@@ -25,7 +25,7 @@
                 </div>
                 <div class="form-group">
                     <label for="dec-rsa-pk">RSA private key:</label>
-                    <input type="text" class="form-control" id="dec-rsa-pk" name="dec-rsa-pk">
+                    <input type="text" class="form-control" id="dec-rsa-pk" name="dec-rsa-pk" required>
                 </div>
                 <input type="submit" value="Decrypt" class="btn btn-primary">                
             </form>            

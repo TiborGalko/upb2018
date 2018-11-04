@@ -30,7 +30,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  */
 public class FileUploadHandler extends HttpServlet {
     
-    private final String UPLOAD_DIRECTORY = "C:\\Users\\h\\Documents\\upb2018";
+    private final String UPLOAD_DIRECTORY = "C:\\Users\\Jurko\\Documents\\skola\\UPB\\upb2018\\files";
     
     private enum Mode {
         ENCRYPT,
@@ -65,7 +65,7 @@ public class FileUploadHandler extends HttpServlet {
                             temp = new File(UPLOAD_DIRECTORY + File.separator + name);
                             item.write(temp); // zapisanie suboru do docasneho suboru
                             encrypted = new File(UPLOAD_DIRECTORY + File.separator + name + ".enc");
-                            System.out.println("Enc encrypted " + encrypted.getName() + " temp " + temp.getName());
+                            //System.out.println("Enc encrypted " + encrypted.getName() + " temp " + temp.getName());
                             filename = encrypted.getName();
                         } else {
                             if(item.getFieldName().equals("enc-rsa-pk")) {
@@ -85,7 +85,7 @@ public class FileUploadHandler extends HttpServlet {
                             String[] parts = name.split(Pattern.quote("."));
                             decrypted = new File(UPLOAD_DIRECTORY + File.separator + parts[0] + "." + parts[1]);
                             
-                            System.out.println("Enc decrypted " + decrypted.getName() + " temp " + temp.getName());
+                            //System.out.println("Enc decrypted " + decrypted.getName() + " temp " + temp.getName());
                             filename = decrypted.getName();
                         } else {
                             if(item.getFieldName().equals("dec-rsa-pk")) {
@@ -123,9 +123,9 @@ public class FileUploadHandler extends HttpServlet {
     private void deletePlainFile(File file){
         try{
     		if(file.delete()){
-    			System.out.println(file.getName() + " is deleted!");
+    			//System.out.println(file.getName() + " is deleted!");
     		}else{
-    			System.out.println("Delete operation is failed.");
+    			//System.out.println("Delete operation is failed.");
     		}
     	   
     	}catch(Exception e){    		
