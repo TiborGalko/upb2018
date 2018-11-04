@@ -14,7 +14,7 @@
                 <input type="file" name="enc-file"> <br>                
                 RSA public key: <input type="text" id="enc-rsa-pk" name="enc-rsa-pk"/><br>
                 <input type="submit" value="Encrypt">                
-            </form>                
+            </form>            
         </div>
     </body>
 </html>

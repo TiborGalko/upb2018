@@ -29,7 +29,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  */
 public class FileUploadHandler extends HttpServlet {
     
-    private final String UPLOAD_DIRECTORY = "C:\\Users\\h\\Documents\\upb2018";
+    private final String UPLOAD_DIRECTORY = "C:\\Users\\Jurko\\Documents\\skola\\UPB\\upb2018\\files";
     
     private enum Mode {
         ENCRYPT,
@@ -73,9 +73,8 @@ public class FileUploadHandler extends HttpServlet {
                             }                          
                         }
                     }                       
-                    CryptoUtils.encryptAES(temp, encrypted);
+                    CryptoUtils.encryptAES(rsaPK, temp, encrypted);
                     deletePlainFile(temp);
-                    // CryptoUtils.encryptRSA(rsaPK, encryptedAESkey);
                 } else {
                     for(FileItem item : multiparts) {
                         if(!item.isFormField()) {
@@ -90,8 +89,7 @@ public class FileUploadHandler extends HttpServlet {
                             }                        
                         }
                     }
-                    //CryptoUtils.decryptRSA(rsaPK, encryptedAESkey); 
-                    CryptoUtils.decryptAES(temp, decrypted);
+                    CryptoUtils.decryptAES(rsaPK, temp, decrypted);
                     deletePlainFile(temp);
                 }           
            
