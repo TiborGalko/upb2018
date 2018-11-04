@@ -13,7 +13,6 @@
             <form action="upload" method="post" enctype="multipart/form-data">
                 <input type="file" name="enc-file"> <br>                
                 RSA public key: <input type="text" id="enc-rsa-pk" name="enc-rsa-pk"/><br>
-                AES key: <input type="text" id="enc-aes" name="enc-aes"/><br>
                 <input type="submit" value="Encrypt">                
             </form>                
         </div>

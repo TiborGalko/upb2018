@@ -17,6 +17,11 @@
         <div id="result">
             <h3>${requestScope["message"]}</h3>
         </div>
-        ${requestScope["link"]}
+        <p>
+            <a src="${requestScope["link"]}">Tu je Váš súbor.</a>            
+        </p>
+        <p>
+            <a src="index.jsp">Späť na stránku</a>
+        </p>
     </body>
 </html>
