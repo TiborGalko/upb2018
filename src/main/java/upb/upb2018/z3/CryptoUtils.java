@@ -154,6 +154,7 @@ public class CryptoUtils {
         }
     }
     
+    //RSA
     private static String doEncrypt(int cipherMode, String key, SecretKey message) throws Exception {
         
         // convert AES key to String
@@ -176,6 +177,7 @@ public class CryptoUtils {
         return Base64.getEncoder().encodeToString(cipher.doFinal(StringMessage.getBytes()));
     }
     
+    //RSA
     private static String doDecrypt(int cipherMode, String key, String message) throws Exception {
         
         PrivateKey privateKey = null;
