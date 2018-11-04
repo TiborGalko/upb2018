@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Base64;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +30,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  */
 public class FileUploadHandler extends HttpServlet {
     
-    private final String UPLOAD_DIRECTORY = "C:\\Users\\Jurko\\Documents\\skola\\UPB\\upb2018\\files";
+    private final String UPLOAD_DIRECTORY = "C:\\Users\\h\\Documents\\upb2018";
     
     private enum Mode {
         ENCRYPT,
@@ -63,9 +64,8 @@ public class FileUploadHandler extends HttpServlet {
                             String name = new File(item.getName()).getName();
                             temp = new File(UPLOAD_DIRECTORY + File.separator + name);
                             item.write(temp); // zapisanie suboru do docasneho suboru
-                            //encrypted = new File(UPLOAD_DIRECTORY + File.separator + name.substring(0, name.length() - 4) + ".enc");
                             encrypted = new File(UPLOAD_DIRECTORY + File.separator + name + ".enc");
-                            //System.out.println("Enc encrypted " + encrypted.getName() + " temp " + temp.getName());
+                            System.out.println("Enc encrypted " + encrypted.getName() + " temp " + temp.getName());
                             filename = encrypted.getName();
                         } else {
                             if(item.getFieldName().equals("enc-rsa-pk")) {
@@ -81,7 +81,11 @@ public class FileUploadHandler extends HttpServlet {
                             String name = new File(item.getName()).getName();
                             temp = new File(UPLOAD_DIRECTORY + File.separator + name);
                             item.write(temp);
-                            decrypted = new File(UPLOAD_DIRECTORY + File.separator + name.substring(0, name.length() - 4));               
+                            
+                            String[] parts = name.split(Pattern.quote("."));
+                            decrypted = new File(UPLOAD_DIRECTORY + File.separator + parts[0] + "." + parts[1]);
+                            
+                            System.out.println("Enc decrypted " + decrypted.getName() + " temp " + temp.getName());
                             filename = decrypted.getName();
                         } else {
                             if(item.getFieldName().equals("dec-rsa-pk")) {
@@ -109,7 +113,7 @@ public class FileUploadHandler extends HttpServlet {
                                  "Sorry this Servlet only handles file upload request");
         }        
     
-        request.getRequestDispatcher("/result.jsp").forward(request, response);    
+        //request.getRequestDispatcher("/result.jsp").forward(request, response);    
     }
     
     /**
