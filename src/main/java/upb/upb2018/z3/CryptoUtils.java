@@ -83,7 +83,9 @@ public class CryptoUtils {
         
         int textSize = keyFileBytes.length - (ivSize + keySize); 
         byte[] textBytes = new byte[textSize]; // dlzka suboru bez iv
-        System.arraycopy(keyFileBytes, ivSize + keySize, textBytes, 0, textSize - 1);
+        System.arraycopy(keyFileBytes, ivSize + keySize, textBytes, 0, textSize);
+        
+        System.out.println("TextBytes " + new String(textBytes));
         
         //String fileContent = new String(Files.readAllBytes(Paths.get(inputFile.getPath())));
         System.out.println("zasifrovany aes decrypt kluc: " + new String(encryptedKey));
@@ -152,8 +154,6 @@ public class CryptoUtils {
     }
 
     private static String doEncrypt(String key, SecretKey message) throws Exception {
-        
-        System.out.println("Key for encryption " + key);
         System.out.println("Message " + message);
 
         // convert AES key to String
@@ -178,7 +178,6 @@ public class CryptoUtils {
 
     private static String doDecrypt(String key, String message) throws Exception {
 
-        System.out.println("Key for decryption " + key);
         System.out.println("Message " + message);
         PrivateKey privateKey = null;
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(key.getBytes()));
