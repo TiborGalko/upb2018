@@ -12,12 +12,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.AlgorithmParameters;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
@@ -29,6 +32,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -40,9 +44,9 @@ public class CryptoUtils {
 
     private static String ALGORITHM = "AES";
     private static String TRANSFORMATION = "AES/CBC/PKCS5Padding";
-    private final static String UPLOAD_PATH = "C:\\Users\\h\\Documents\\upb2018"; // Cesta k priecinku na ukladanie klucov
+    private final static String UPLOAD_PATH = "C:\\Users\\Jurko\\Documents\\skola\\UPB\\upb2018\\files"; // Cesta k priecinku na ukladanie klucov
 
-    public static void encryptAES(File inputFile, File outputFile) throws Exception {
+    public static void encryptAES(String rsaPK, File inputFile, File outputFile) throws Exception {
         ALGORITHM = "AES";
         TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
@@ -56,15 +60,20 @@ public class CryptoUtils {
         File folder = new File(UPLOAD_PATH);
         File result = new File(folder, name + "-key");
                 
-        FileOutputStream out = new FileOutputStream(result);
-        ObjectOutputStream oout = new ObjectOutputStream(out);
+        //FileOutputStream out = new FileOutputStream(result);
+        //ObjectOutputStream oout = new ObjectOutputStream(out);
         
-        oout.writeObject(key);
+        String write = doEncrypt(Cipher.ENCRYPT_MODE, rsaPK, key);
+        System.out.println("aes kluc: " + Base64.getEncoder().encodeToString(key.getEncoded()));
+        System.out.println("zasifrovany aes kluc: " + write);
+        try (PrintStream out = new PrintStream(new FileOutputStream(result))) {
+            out.print(write);
+        }
 
         doFileEncrypt(Cipher.ENCRYPT_MODE, key, inputFile, outputFile);       
     }
 
-    public static void decryptAES(File inputFile, File outputFile) throws Exception {
+    public static void decryptAES(String rsaPK, File inputFile, File outputFile) throws Exception {
         ALGORITHM = "AES";
         TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
@@ -79,33 +88,28 @@ public class CryptoUtils {
 
         File folder = new File(UPLOAD_PATH);
         File resultKey = new File(folder, name + "-key"); // key je vzdy outputFile + "-key"        
-        FileInputStream in = new FileInputStream(resultKey);
+        //FileInputStream in = new FileInputStream(resultKey);       
         
-        SecretKey key = null;
-        try (ObjectInputStream ois = new ObjectInputStream(in)) {
-            key = (SecretKey) ois.readObject();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        in.close();
+        
+        //SecretKey key = null;
+        //try (ObjectInputStream ois = new ObjectInputStream(in)) {
+            //key = (SecretKey) ois.readObject();
+        //} catch (Exception ex) {
+            //ex.printStackTrace();
+        //}
+        //in.close();
+        
+        String fileContent = new String(Files.readAllBytes(Paths.get(resultKey.getPath())));
+        System.out.println("zasifrovany aes kluc: " + fileContent);
+        String read = doDecrypt(Cipher.ENCRYPT_MODE, rsaPK, fileContent);
+        System.out.println("povodny aes kluc: " + read);
+        SecretKey key = new SecretKeySpec(Base64.getDecoder().decode(read), 0, Base64.getDecoder().decode(read).length, "AES");
 
         File resultIV = new File(folder, name + "-iv");        
         byte[] iv = FileUtils.readFileToByteArray(resultIV);
         
         doFileDecrypt(Cipher.DECRYPT_MODE, key, iv, inputFile, outputFile);
-    }
-    
-    public static void encryptRSA(String message, File outputFile) throws Exception {
-        ALGORITHM = "RSA";
-        String key = "todo";
-        doCrypto(Cipher.ENCRYPT_MODE, key, message, outputFile);
-    }
-
-    public static void decryptRSA(String message, File outputFile) throws Exception {
-        ALGORITHM = "RSA";
-        String key = "todo";
-        doCrypto(Cipher.DECRYPT_MODE, key, message, outputFile);
-    }             
+    }          
 
     private static void doFileEncrypt(int cipherMode, SecretKey key, File inputFile, File outputFile) throws Exception {
         try {
@@ -150,38 +154,48 @@ public class CryptoUtils {
         }
     }
     
-    private static void doCrypto(int cipherMode, String key, String message, File outputFile) throws Exception {
-
-        try {
-            if (cipherMode == Cipher.ENCRYPT_MODE) {
-                byte[] byteKey = Base64.getDecoder().decode(key.replace(" ", ""));
-                X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(byteKey);
-                KeyFactory kf = KeyFactory.getInstance(ALGORITHM);
-
-                PublicKey pk = kf.generatePublic(X509publicKey);
-
-                Cipher cipher = Cipher.getInstance(ALGORITHM);
-                cipher.init(Cipher.ENCRYPT_MODE, pk);
-                String ret = Base64.getEncoder().encodeToString(cipher.doFinal(message.getBytes("UTF-8")));
-
-                try (PrintStream out = new PrintStream(new FileOutputStream(outputFile))) {
-                    out.print(ret);
-                }
-            } else {
-                System.out.println("---------------------------------------------------");
-                byte[] byteKey = Base64.getDecoder().decode(key.replace(" ", ""));
-                PKCS8EncodedKeySpec pkcs8encodedkeyspec = new PKCS8EncodedKeySpec(byteKey);
-                KeyFactory kf = KeyFactory.getInstance(ALGORITHM);
-                PrivateKey sk = kf.generatePrivate(pkcs8encodedkeyspec);
-
-                Cipher cipher = Cipher.getInstance(ALGORITHM);
-                cipher.init(Cipher.DECRYPT_MODE, sk);
-                String ret = Base64.getEncoder().encodeToString(cipher.doFinal(message.getBytes("UTF-8")));
-
-                System.out.println(ret);
-            }
-        } catch (Exception e) {
+    private static String doEncrypt(int cipherMode, String key, SecretKey message) throws Exception {
+        
+        // convert AES key to String
+        String StringMessage = Base64.getEncoder().encodeToString(message.getEncoded());
+        
+        //Create RSA public key from string
+        PublicKey publicKey = null;
+        try{
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64.getDecoder().decode(key.getBytes()));
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            publicKey = keyFactory.generatePublic(keySpec);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
             e.printStackTrace();
         }
+        
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        return Base64.getEncoder().encodeToString(cipher.doFinal(StringMessage.getBytes()));
     }
+    
+    private static String doDecrypt(int cipherMode, String key, String message) throws Exception {
+        
+        PrivateKey privateKey = null;
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(key.getBytes()));
+        KeyFactory keyFactory = null;
+        try {
+            keyFactory = KeyFactory.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        try {
+            privateKey = keyFactory.generatePrivate(keySpec);
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+        
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        
+        return new String(cipher.doFinal(Base64.getDecoder().decode(message.getBytes())));
+    }
+    
 }
