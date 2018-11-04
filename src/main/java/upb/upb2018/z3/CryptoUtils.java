@@ -122,6 +122,8 @@ public class CryptoUtils {
         System.arraycopy(keyFileBytes, ivSize + 1, keyBytes, 0, keySize - 1);
 
         doFileDecrypt(Cipher.DECRYPT_MODE, key, iv, inputFile, outputFile);
+        
+    }
 
     private static void doFileEncrypt(int cipherMode, SecretKey key, File inputFile, File outputFile) throws Exception {
         try {
