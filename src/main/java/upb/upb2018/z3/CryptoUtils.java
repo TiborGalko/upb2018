@@ -5,18 +5,9 @@
  */
 package upb.upb2018.z3;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.AlgorithmParameters;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -26,11 +17,7 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.List;
-import java.util.regex.Pattern;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -76,51 +63,23 @@ public class CryptoUtils {
         int ivSize = 16;
         byte[] iv = new byte[ivSize];
         System.arraycopy(keyFileBytes, 0, iv, 0, ivSize); // skopirovanie prvych 16 bytov do iv
-
-        int cnt = 0;
-        ArrayList<Byte> buffer = new ArrayList<>(); // buffer sa prepise do kluca ked sa najde nieco ine ako 0
-        ArrayList<Byte> encryptedKey = new ArrayList<>(); 
-        for(int i = ivSize + 1; i < keyFileBytes.length; i++) { //prechadza sa subor a zapisuje sa kluc
-            if(cnt == 8) {
-                break; // naslo sa 8 nul
-            }                
-            if(keyFileBytes[i] == 0) {
-                cnt++;                               
-                buffer.add(keyFileBytes[i]);
-            }
-            else {
-                if(cnt > 0) {
-                    for (Byte b : buffer) {
-                        encryptedKey.add(b);
-                    }
-                    buffer.clear();
-                }
-                else {
-                    encryptedKey.add(keyFileBytes[i]);
-                }
-                cnt = 0;                              
-            }         
-            //System.arraycopy(keyFileBytes, ivSize + indexOfDivider + 1, encryptedKey, 0, keySize); keyFileBytes[i]
-        }                       
-        int keySize = encryptedKey.size();
-        System.out.println("Key size " + encryptedKey.size());
         
-        int textSize = keyFileBytes.length - (ivSize + keySize + 8); 
+        int keySize = 172;
+        byte[] encryptedKey = new byte[keySize];
+        System.arraycopy(keyFileBytes, ivSize, encryptedKey, 0, keySize); // skopirovanie prvych 16 bytov do iv                
+        
+        int textSize = keyFileBytes.length - (ivSize + keySize); 
         byte[] textBytes = new byte[textSize]; // dlzka suboru bez iv
-        System.arraycopy(keyFileBytes, ivSize + keySize, textBytes, 0, textSize - 1);
+        System.arraycopy(keyFileBytes, ivSize + keySize, textBytes, 0, textSize);
         
-        //String fileContent = new String(Files.readAllBytes(Paths.get(inputFile.getPath())));
-        System.out.println("zasifrovany aes decrypt kluc: " + encryptedKey.toString());
-        String read = doDecrypt(rsaPK, encryptedKey.toString());
-        System.out.println("povodny aes decrypt kluc: " + read);
+        String read = doDecrypt(rsaPK, new String(encryptedKey));
         SecretKey key = new SecretKeySpec(Base64.getDecoder().decode(read), 0, Base64.getDecoder().decode(read).length, "AES");
 
-        doFileDecrypt(Cipher.DECRYPT_MODE, key, iv, inputFile, outputFile);
+        doFileDecrypt(Cipher.DECRYPT_MODE, key, iv, textBytes, outputFile);
     }
 
     private static void doFileEncrypt(int cipherMode, SecretKey key, String rsaPK, File inputFile, File outputFile) throws Exception {
         try {
-            //String name = inputFile.getName().substring(0, inputFile.getName().length() - 4);
 
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(cipherMode, key);
@@ -135,19 +94,14 @@ public class CryptoUtils {
 
             // Zasifrovanie kluca cez RSA
             String encryptedAESKey = doEncrypt(rsaPK, key);
-                        
-            System.out.println("aes encrypt kluc: " + Base64.getEncoder().encodeToString(key.getEncoded()));
-            System.out.println("zasifrovany aes encrypt kluc: " + encryptedAESKey);
-            System.out.println("dlzka zasifrovaneho aes kluca v bytoch: " + encryptedAESKey.getBytes().length);
+            
             // Spojenie iv, zasifrovaneho kluca a ciphertextu do jedneho pola
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             outputStream.write(iv);            
-            outputStream.write(encryptedAESKey.getBytes());
-            outputStream.write(00000000); // 8 nul na oddelenie textu a kluca
+            outputStream.write(encryptedAESKey.getBytes());            
             outputStream.write(outputBytes);
             
             byte out[] = outputStream.toByteArray();
-            System.out.println(Arrays.toString(out));
 
             FileUtils.writeByteArrayToFile(outputFile, out);
 
@@ -156,13 +110,11 @@ public class CryptoUtils {
         }
     }
 
-    private static void doFileDecrypt(int cipherMode, SecretKey key, byte[] iv, File inputFile, File outputFile) throws Exception {
+    private static void doFileDecrypt(int cipherMode, SecretKey key, byte[] iv, byte[] inputBytes, File outputFile) throws Exception {
         try {
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(cipherMode, key, new IvParameterSpec(iv));
-
-            // Nacitanie vlozeneho suboru
-            byte[] inputBytes = FileUtils.readFileToByteArray(inputFile);
+                        
             byte[] outputBytes = cipher.doFinal(inputBytes);
 
             FileUtils.writeByteArrayToFile(outputFile, outputBytes);
@@ -174,9 +126,6 @@ public class CryptoUtils {
 
     private static String doEncrypt(String key, SecretKey message) throws Exception {
         
-        System.out.println("Key for encryption " + key);
-        System.out.println("Message " + message);
-
         // convert AES key to String
         String StringMessage = Base64.getEncoder().encodeToString(message.getEncoded());
 
@@ -199,8 +148,6 @@ public class CryptoUtils {
 
     private static String doDecrypt(String key, String message) throws Exception {
 
-        System.out.println("Key for decryption " + key);
-        System.out.println("Message " + message);
         PrivateKey privateKey = null;
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(key.getBytes()));
         KeyFactory keyFactory = null;

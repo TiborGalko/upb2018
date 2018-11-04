@@ -25,7 +25,7 @@
                 </div>
                 <div class="form-group">
                     <label for="enc-rsa-pk">RSA public key:</label>
-                    <input type="text" class="form-control" id="enc-rsa-pk" name="enc-rsa-pk">
+                    <input type="text" class="form-control" id="enc-rsa-pk" name="enc-rsa-pk" required>
                 </div>
                 <input type="submit" value="Encrypt" class="btn btn-primary">                
             </form>            
