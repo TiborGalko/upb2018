@@ -5,6 +5,8 @@
  */
 package upb.upb2018.z3;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,6 +25,7 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.regex.Pattern;
 import javax.crypto.BadPaddingException;
@@ -59,6 +62,12 @@ public class CryptoUtils {
 
         File folder = new File(UPLOAD_PATH);
         File result = new File(folder, name + "-key");
+
+/*
+        FileOutputStream out = new FileOutputStream(result);
+        ObjectOutputStream oout = new ObjectOutputStream(out);
+        oout.writeObject(key);
+*/
                 
         //FileOutputStream out = new FileOutputStream(result);
         //ObjectOutputStream oout = new ObjectOutputStream(out);
@@ -70,7 +79,7 @@ public class CryptoUtils {
             out.print(write);
         }
 
-        doFileEncrypt(Cipher.ENCRYPT_MODE, key, inputFile, outputFile);       
+        doFileEncrypt(Cipher.ENCRYPT_MODE, key, inputFile, outputFile);
     }
 
     public static void decryptAES(String rsaPK, File inputFile, File outputFile) throws Exception {
@@ -78,8 +87,8 @@ public class CryptoUtils {
         TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
         String name = inputFile.getName().substring(0, inputFile.getName().length() - 4);
- 
-        if (name.contains(".")) {            
+
+        if (name.contains(".")) {
             String[] parts = name.split(Pattern.quote("."));
             name = parts[0];
         } else {
@@ -87,17 +96,15 @@ public class CryptoUtils {
         }
 
         File folder = new File(UPLOAD_PATH);
-        File resultKey = new File(folder, name + "-key"); // key je vzdy outputFile + "-key"        
-        //FileInputStream in = new FileInputStream(resultKey);       
-        
-        
-        //SecretKey key = null;
-        //try (ObjectInputStream ois = new ObjectInputStream(in)) {
-            //key = (SecretKey) ois.readObject();
-        //} catch (Exception ex) {
-            //ex.printStackTrace();
-        //}
-        //in.close();
+
+        File resultKey = new File(folder, name + "-key");               
+        /*byte[] keyFileBytes = FileUtils.readFileToByteArray(resultKey);
+        SecretKey key = null;
+        try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(keyFileBytes))) {
+            key = (SecretKey) ois.readObject();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }*/
         
         String fileContent = new String(Files.readAllBytes(Paths.get(resultKey.getPath())));
         System.out.println("zasifrovany aes kluc: " + fileContent);
@@ -105,11 +112,16 @@ public class CryptoUtils {
         System.out.println("povodny aes kluc: " + read);
         SecretKey key = new SecretKeySpec(Base64.getDecoder().decode(read), 0, Base64.getDecoder().decode(read).length, "AES");
 
-        File resultIV = new File(folder, name + "-iv");        
-        byte[] iv = FileUtils.readFileToByteArray(resultIV);
-        
+        /*Nacitanie IV z ciphertextu*/
+        int ivSize = 16;
+        byte[] iv = new byte[ivSize];
+        System.arraycopy(keyFileBytes, 0, iv, 0, ivSize); // skopirovanie prvych 16 bytov do iv
+
+        int keySize = keyFileBytes.length - ivSize;
+        byte[] keyBytes = new byte[keySize]; // dlzka suboru bez iv
+        System.arraycopy(keyFileBytes, ivSize + 1, keyBytes, 0, keySize - 1);
+
         doFileDecrypt(Cipher.DECRYPT_MODE, key, iv, inputFile, outputFile);
-    }          
 
     private static void doFileEncrypt(int cipherMode, SecretKey key, File inputFile, File outputFile) throws Exception {
         try {
@@ -121,17 +133,19 @@ public class CryptoUtils {
             // Nacitanie vlozeneho suboru            
             byte[] inputBytes = FileUtils.readFileToByteArray(inputFile);
             byte[] outputBytes = cipher.doFinal(inputBytes);
-            // Vypisanie zasifrovaneho textu
-            FileUtils.writeByteArrayToFile(outputFile, outputBytes);
+            // Vypisanie zasifrovaneho textu            
 
             // Get cipher IV 
             AlgorithmParameters params = cipher.getParameters();
             byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
-            
-            // Vypisanie iv do suboru
-            File folder = new File(UPLOAD_PATH);
-            File resultIV = new File(folder, name + "-iv");
-            FileUtils.writeByteArrayToFile(resultIV, iv);
+
+            // Spojenie iv a ciphertextu do jedneho pola
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            outputStream.write(iv);
+            outputStream.write(outputBytes);
+            byte out[] = outputStream.toByteArray();
+
+            FileUtils.writeByteArrayToFile(outputFile, out);
 
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | IOException ex) {
             throw new Exception("Error encrypting / decrypting file" + ex.getMessage());
@@ -144,8 +158,8 @@ public class CryptoUtils {
             cipher.init(cipherMode, key, new IvParameterSpec(iv));
 
             // Nacitanie vlozeneho suboru
-            byte[] inputBytes = FileUtils.readFileToByteArray(inputFile);            
-            byte[] outputBytes = cipher.doFinal(inputBytes);                        
+            byte[] inputBytes = FileUtils.readFileToByteArray(inputFile);
+            byte[] outputBytes = cipher.doFinal(inputBytes);
 
             FileUtils.writeByteArrayToFile(outputFile, outputBytes);
 
@@ -154,7 +168,6 @@ public class CryptoUtils {
         }
     }
     
-    //RSA
     private static String doEncrypt(int cipherMode, String key, SecretKey message) throws Exception {
         
         // convert AES key to String
@@ -177,7 +190,6 @@ public class CryptoUtils {
         return Base64.getEncoder().encodeToString(cipher.doFinal(StringMessage.getBytes()));
     }
     
-    //RSA
     private static String doDecrypt(int cipherMode, String key, String message) throws Exception {
         
         PrivateKey privateKey = null;
