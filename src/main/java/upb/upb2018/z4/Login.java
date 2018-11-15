@@ -22,6 +22,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import upb.upb2018.z3.CryptoUtils;
 import upb.upb2018.z3.FileUploadHandler;
 import upb.upb2018.z4.Database.MyResult;
+import upb.upb2018.z4.Security;
 
 public class Login extends HttpServlet {
     
@@ -34,9 +35,7 @@ public class Login extends HttpServlet {
     
     
     public static MyResult prihlasovanie(String meno, String heslo) throws IOException, Exception{
-        /*
-        *   Delay je vhodne vytvorit este pred kontolou prihlasovacieho mena.
-        */
+        Security.delay(1000);
         MyResult account = Database.find("hesla.txt", meno);
         if (!account.getFirst()){
             return new MyResult(false, "Nespravne meno.");
