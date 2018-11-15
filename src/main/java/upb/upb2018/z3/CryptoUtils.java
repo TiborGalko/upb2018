@@ -5,18 +5,9 @@
  */
 package upb.upb2018.z3;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.AlgorithmParameters;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -26,11 +17,7 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.List;
-import java.util.regex.Pattern;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -50,7 +37,6 @@ public class CryptoUtils {
 
     private static String ALGORITHM = "AES";
     private static String TRANSFORMATION = "AES/CBC/PKCS5Padding";
-    private final static String UPLOAD_PATH = "C:\\Users\\h\\Documents\\upb2018"; // Cesta k priecinku na ukladanie klucov
 
     public static void encryptAES(String rsaPK, File inputFile, File outputFile) throws Exception {
         ALGORITHM = "AES";
@@ -85,12 +71,7 @@ public class CryptoUtils {
         byte[] textBytes = new byte[textSize]; // dlzka suboru bez iv
         System.arraycopy(keyFileBytes, ivSize + keySize, textBytes, 0, textSize);
         
-        System.out.println("TextBytes " + new String(textBytes));
-        
-        //String fileContent = new String(Files.readAllBytes(Paths.get(inputFile.getPath())));
-        System.out.println("zasifrovany aes decrypt kluc: " + new String(encryptedKey));
         String read = doDecrypt(rsaPK, new String(encryptedKey));
-        System.out.println("povodny aes decrypt kluc: " + read);
         SecretKey key = new SecretKeySpec(Base64.getDecoder().decode(read), 0, Base64.getDecoder().decode(read).length, "AES");
 
         doFileDecrypt(Cipher.DECRYPT_MODE, key, iv, textBytes, outputFile);
@@ -98,7 +79,6 @@ public class CryptoUtils {
 
     private static void doFileEncrypt(int cipherMode, SecretKey key, String rsaPK, File inputFile, File outputFile) throws Exception {
         try {
-            //String name = inputFile.getName().substring(0, inputFile.getName().length() - 4);
 
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(cipherMode, key);
@@ -113,10 +93,7 @@ public class CryptoUtils {
 
             // Zasifrovanie kluca cez RSA
             String encryptedAESKey = doEncrypt(rsaPK, key);
-                        
-            System.out.println("aes encrypt kluc: " + Base64.getEncoder().encodeToString(key.getEncoded()));
-            System.out.println("zasifrovany aes encrypt kluc: " + encryptedAESKey);
-            System.out.println("dlzka zasifrovaneho aes kluca v bytoch: " + encryptedAESKey.getBytes().length);
+            
             // Spojenie iv, zasifrovaneho kluca a ciphertextu do jedneho pola
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             outputStream.write(iv);            
@@ -124,7 +101,6 @@ public class CryptoUtils {
             outputStream.write(outputBytes);
             
             byte out[] = outputStream.toByteArray();
-            System.out.println(Arrays.toString(out));
 
             FileUtils.writeByteArrayToFile(outputFile, out);
 
@@ -137,8 +113,6 @@ public class CryptoUtils {
         try {
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(cipherMode, key, new IvParameterSpec(iv));
-            System.out.println("Desifrujem " + new String(inputBytes));
-            // Nacitanie vlozeneho subor
                         
             byte[] outputBytes = cipher.doFinal(inputBytes);
             
@@ -154,8 +128,7 @@ public class CryptoUtils {
     }
 
     private static String doEncrypt(String key, SecretKey message) throws Exception {
-        System.out.println("Message " + message);
-
+        
         // convert AES key to String
         String StringMessage = Base64.getEncoder().encodeToString(message.getEncoded());
 
@@ -178,7 +151,6 @@ public class CryptoUtils {
 
     private static String doDecrypt(String key, String message) throws Exception {
 
-        System.out.println("Message " + message);
         PrivateKey privateKey = null;
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(key.getBytes()));
         KeyFactory keyFactory = null;
