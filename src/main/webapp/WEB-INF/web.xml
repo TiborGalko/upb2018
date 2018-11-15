@@ -3,7 +3,7 @@
     <servlet>
         <servlet-name>FileUploadHandler</servlet-name>
         <servlet-class>upb.upb2018.z3.FileUploadHandler</servlet-class>        
-    </servlet> 
+    </servlet>
     <servlet>
         <servlet-name>Login</servlet-name>
         <servlet-class>upb.upb2018.z4.Login</servlet-class>        

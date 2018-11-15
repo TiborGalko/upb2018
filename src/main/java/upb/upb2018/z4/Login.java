@@ -7,11 +7,30 @@
 //////////////////////////////////////////////////////////////////////////
 package upb.upb2018.z4;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.StringTokenizer;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import upb.upb2018.z3.CryptoUtils;
+import upb.upb2018.z3.FileUploadHandler;
 import upb.upb2018.z4.Database.MyResult;
 
-public class Login {
+public class Login extends HttpServlet {
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setAttribute("message",
+                                 "Sorry this Servlet only handles file upload request");        
+    }
     
     
     public static MyResult prihlasovanie(String meno, String heslo) throws IOException, Exception{

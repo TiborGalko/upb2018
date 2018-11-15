@@ -23,7 +23,7 @@
                 <hr class="my-4">             
             </div>                
         <div>
-            <form action="Login" method="post" enctype="multipart/form-data">
+            <form action="login" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="login">Meno:</label>
                     <input type="text" class="form-control" id="login" name="login" required>
