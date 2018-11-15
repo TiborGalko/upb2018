@@ -12,6 +12,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.StringTokenizer;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -29,12 +33,66 @@ public class Login extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("message",
-                                 "Sorry this Servlet only handles file upload request");        
+         System.out.println("Login.java");
+              if(ServletFileUpload.isMultipartContent(request)){
+            try {
+                List<FileItem> multiparts = new ServletFileUpload(
+                                         new DiskFileItemFactory()).parseRequest(request);
+                
+         
+                String login = "";
+                String pass = "";
+                MyResult result;
+                String sprava;
+                
+   
+                    for(FileItem item : multiparts) {
+                            if(item.getFieldName().equals("login")) {
+                                login = item.getString(); //nacitanie rsa public kluca z textfieldu stranky
+                                System.out.println(login);
+                            }  
+                               if(item.getFieldName().equals("password")) {
+                                pass = item.getString(); //nacitanie rsa public kluca z textfieldu stranky
+                                 System.out.println(pass);
+                            }
+                    }     
+                    
+                     result = prihlasovanie(login,pass);
+                     System.out.println(result);
+                     System.out.println(result.getFirst());
+                     System.out.println(result.getSecond());
+                    if(result.getFirst()){
+                    request.getRequestDispatcher("/encrypt.jsp").forward(request, response);
+                    }else{
+                        request.getRequestDispatcher("/encrypt.jsp").forward(request, response);
+                     sprava = result.getSecond();
+                     request.setAttribute("message", sprava );
+                    }
+
+                             
+            } catch (Exception ex) {
+               request.setAttribute("message", "File Enc/Dec Failed due to " + ex);
+            }          
+                     
+        }else{
+            request.setAttribute("message",
+                                 "Sorry this Servlet only handles file upload request");
+        }
+              
+        
     }
     
     
     public static MyResult prihlasovanie(String meno, String heslo) throws IOException, Exception{
+        try{ 
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("upb2018PU");
+        EntityManager em = emf.createEntityManager();
+           TypedQuery<Osoba> q = em.createNamedQuery("Osoba.findAll", Osoba.class);
+        
+        for (Osoba o: q.getResultList()) {
+           //System.out.println(o.getId() + " : " + o.getMeno() + " -> " + o.getVyska() + ", " + o.getVaha());
+           System.out.println(o);
+        }}catch(Exception e){System.out.println("je to v pici" + e);}
         Security.delay(1000);
         MyResult account = Database.find("hesla.txt", meno);
         if (!account.getFirst()){
