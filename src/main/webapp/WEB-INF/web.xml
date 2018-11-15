@@ -3,15 +3,31 @@
     <servlet>
         <servlet-name>FileUploadHandler</servlet-name>
         <servlet-class>upb.upb2018.z3.FileUploadHandler</servlet-class>        
+    </servlet> 
+    <servlet>
+        <servlet-name>Login</servlet-name>
+        <servlet-class>upb.upb2018.z4.Login</servlet-class>        
     </servlet>    
+    <servlet>
+        <servlet-name>Registration</servlet-name>
+        <servlet-class>upb.upb2018.z4.Registration</servlet-class>        
+    </servlet> 
     <servlet-mapping>
         <servlet-name>FileUploadHandler</servlet-name>
         <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Login</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Registration</servlet-name>
+        <url-pattern>/register</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>        
     </session-config>
     <welcome-file-list>
-        <welcome-file>encrypt.jsp</welcome-file>
+        <welcome-file>login.jsp</welcome-file>
     </welcome-file-list>
 </web-app>
