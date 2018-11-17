@@ -8,8 +8,6 @@ package upb.upb2018.z4;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,12 +20,17 @@ public class Registration extends HttpServlet {
             throws ServletException, IOException {
         String login = request.getParameter("login");
         String password = request.getParameter("password");
-
+        
+        System.out.println(login + " " + password );
+        
         try {
             Result result = registracia(login, password);
             System.out.println(result.getMesssage());
             if (result.isResult()) {
                 request.getRequestDispatcher("/encrypt.jsp").forward(request, response);
+                request.setAttribute("message", result.getMesssage());
+            } else {
+                request.getRequestDispatcher("/register.jsp").forward(request, response);
                 request.setAttribute("message", result.getMesssage());
             }
         } catch (IOException | NoSuchAlgorithmException | ServletException ex) {

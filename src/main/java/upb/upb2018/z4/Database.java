@@ -5,14 +5,6 @@
  */
 package upb.upb2018.z4;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -67,11 +59,10 @@ public class Database {
     }
     
     private final EntityManagerFactory emf;
-    private final EntityManager em;
+    private EntityManager em;
     
     public Database() {
-        emf = Persistence.createEntityManagerFactory("upb2018PU"); 
-        em = emf.createEntityManager();        
+        emf = Persistence.createEntityManagerFactory("upb2018PU");             
     }
 
     protected Result add(Osoba osoba) {
@@ -84,6 +75,7 @@ public class Database {
     
     protected Osoba get(String meno) {
         Result r = find(meno);
+        System.out.println(r.getMesssage());
         if(r.isResult()) {
             return r.getOsoba();
         }
@@ -93,14 +85,15 @@ public class Database {
     }
 
     protected Result find(String meno) {        
-        try {            
+        try {       
+            em = emf.createEntityManager();    
             TypedQuery<Osoba> q = em.createNamedQuery("Osoba.findByMeno", Osoba.class);
-            q.setParameter("login", meno);
-
+            q.setParameter("login", meno);            
             if (q.getResultList().size() > 0) {
                 for(Osoba o : q.getResultList()) {
+                    System.out.println(o);
                     return new Result(true, "Osoba sa nasla", o);
-                }                
+                }  
             } else {      
                 return new Result(false, "Zadana osoba neexistuje");
             }
@@ -110,7 +103,7 @@ public class Database {
             em.close();
         }
         
-        return new Result(false, "Zadana osoba neexistuje");
+        return new Result(false, "Chyba");
     }
 
     protected boolean exist(String meno) {        
@@ -119,6 +112,7 @@ public class Database {
 
     public void persist(Object object) {
         try {
+            em = emf.createEntityManager();    
             em.getTransaction().begin();
             em.persist(object);
             em.getTransaction().commit();
