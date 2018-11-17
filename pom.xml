@@ -49,15 +49,13 @@
             <artifactId>passay</artifactId>
             <version>1.3.1</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.derby/derby -->
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
         <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>10.14.2.0</version>
-            <scope>test</scope>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.0.7</version>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>

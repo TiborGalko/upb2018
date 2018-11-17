@@ -19,7 +19,7 @@
     <body>
         <div class="container">
             <div class="jumbotron">
-                <h1 class="display-4">Login to UPB2018 z4</h1>
+                <h1 class="display-4">Login UPB2018</h1>
                 <hr class="my-4">             
             </div>                
         <div>
