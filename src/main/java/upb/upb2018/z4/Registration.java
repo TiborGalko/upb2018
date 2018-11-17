@@ -46,7 +46,7 @@ public class Registration extends HttpServlet {
         }
 
         Database db = new Database();
-        long salt = Security.getSalt(Long.MIN_VALUE, Long.MAX_VALUE);
+        long salt = Security.getSalt(Long.MIN_VALUE, 50);
         String hashedSaltedPass = Security.mixPasswordAndSaltAndHash(heslo, salt);
         Osoba user = new Osoba(meno, hashedSaltedPass, salt);
         Result r = db.add(user);

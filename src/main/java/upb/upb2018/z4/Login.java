@@ -53,9 +53,9 @@ public class Login extends HttpServlet {
         Osoba user = db.get(meno);
         if (user == null) {
             return new Result(false, "Uzivatel neexistuje");
-        }
-        long salt = Security.getSalt(Long.MIN_VALUE, Long.MAX_VALUE);
-        String hashedSaltedPass = Security.mixPasswordAndSaltAndHash(heslo, salt);
+        }        
+        String hashedSaltedPass = Security.mixPasswordAndSaltAndHash(heslo, user.getSalt());
+        System.out.println(hashedSaltedPass);
         if (Security.compareTwoStrings(hashedSaltedPass, user.getPassword())) {
             delay = 1000;
             return new Result(true, "Prihlasenie uspesne");
