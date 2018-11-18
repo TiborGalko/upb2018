@@ -30,7 +30,9 @@ public class Login extends HttpServlet {
             Result result = prihlasovanie(login, password);
             System.out.println(result.getMesssage());
             if (result.isResult()) {
-                request.getRequestDispatcher("/encrypt.jsp").forward(request, response);
+                //vytvorenie session
+                request.getSession(true);
+                response.sendRedirect("encrypt");
                 request.setAttribute("message", result.getMesssage());
             } else {
                 request.getRequestDispatcher("/login.jsp").forward(request, response);

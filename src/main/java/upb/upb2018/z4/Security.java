@@ -29,7 +29,7 @@ import org.passay.dictionary.sort.ArraysSort;
 public class Security {
     
     //private static final String DICT_PATH = "/usr/local/upb2018";
-    private static final String DICT_PATH = "C:\\Users\\h\\Documents\\upb2018";
+    private static final String DICT_PATH = "/home/juraj/Documents";
 
     private static String hash(String password) throws NoSuchAlgorithmException{  
         /*

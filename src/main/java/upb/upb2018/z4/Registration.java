@@ -27,7 +27,9 @@ public class Registration extends HttpServlet {
             Result result = registracia(login, password);
             System.out.println(result.getMesssage());
             if (result.isResult()) {
-                request.getRequestDispatcher("/encrypt.jsp").forward(request, response);
+                //vytvorenie session
+                request.getSession(true);
+                response.sendRedirect("encrypt");
                 request.setAttribute("message", result.getMesssage());
             } else {
                 request.getRequestDispatcher("/register.jsp").forward(request, response);

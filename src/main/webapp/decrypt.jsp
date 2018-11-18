@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page session="false" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -15,7 +16,8 @@
             <div class="jumbotron">
                 <h1 class="display-4">Encryption / Decryption tool</h1>
                 <hr class="my-4">
-                <a href="encrypt.jsp"><button class="btn btn-info"><i class="material-icons">lock</i><span>Encrypt</span></button></a>
+                <a href="encrypt"><button class="btn btn-info"><i class="material-icons">lock</i><span>Encrypt</span></button></a>
+                <a href="logout"><button class="btn btn-danger float-right"><i class="material-icons">exit_to_app</i><span>Log out</span></button></a>
             </div>                
         <div>
             <h3>Choose file to decrypt</h3>
