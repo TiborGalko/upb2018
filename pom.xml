@@ -54,7 +54,7 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.0.7</version>
-        </dependency>
+        </dependency>        
     </dependencies>
     <build>
         <plugins>

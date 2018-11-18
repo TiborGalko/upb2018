@@ -28,12 +28,12 @@ public class Registration extends HttpServlet {
             System.out.println(result.getMesssage());
             if (result.isResult()) {
                 //vytvorenie session
-                request.getSession(true);
-                response.sendRedirect("encrypt");
+                //request.getSession(true);
                 request.setAttribute("message", result.getMesssage());
-            } else {
+                request.getRequestDispatcher("/login.jsp").forward(request, response);                
+            } else {                
+                request.setAttribute("message", result.getMesssage());
                 request.getRequestDispatcher("/register.jsp").forward(request, response);
-                request.setAttribute("message", result.getMesssage());
             }
         } catch (IOException | NoSuchAlgorithmException | ServletException ex) {
             System.err.println("Pri registracii nastala chyba " + ex.getLocalizedMessage());

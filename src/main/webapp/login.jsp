@@ -22,7 +22,12 @@
             <div class="jumbotron">
                 <h1 class="display-4">Login UPB2018</h1>
                 <hr class="my-4">             
-            </div>                
+                <%
+                final String message = (String) request.getAttribute ("message");                
+                if (message != null) { %> 
+                <script> alert("<%= message %>"); </script> 
+                <% } %>
+            </div>            
         <div>
             <form action="login" method="post">
                 <div class="form-group">

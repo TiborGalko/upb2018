@@ -21,7 +21,12 @@
         <div class="container">
             <div class="jumbotron">
                 <h1 class="display-4">Register UPB2018</h1>
-                <hr class="my-4">             
+                <hr class="my-4">                  
+                <%
+                final String message = (String) request.getAttribute ("message");                
+                if (message != null) { %> 
+                <script> alert("<%= message %>"); </script> 
+                <% } %>
             </div>                
         <div>
             <form action="register" method="post">

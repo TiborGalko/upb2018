@@ -33,10 +33,10 @@ public class Login extends HttpServlet {
                 //vytvorenie session
                 request.getSession(true);
                 response.sendRedirect("encrypt");
+                //request.setAttribute("message", result.getMesssage());
+            } else {                
                 request.setAttribute("message", result.getMesssage());
-            } else {
                 request.getRequestDispatcher("/login.jsp").forward(request, response);
-                request.setAttribute("message", result.getMesssage());
             }
         } catch (Exception ex) {
             System.err.println("Pri prihlasovani nastala chyba " + ex.getLocalizedMessage());
