@@ -7,6 +7,7 @@
 //////////////////////////////////////////////////////////////////////////
 package upb.upb2018.z4;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -27,12 +28,13 @@ import org.passay.dictionary.sort.ArraysSort;
 
 public class Security {
     
+    private static final String DICT_PATH = "/usr/local/upb2018";
+
     private static String hash(String password) throws NoSuchAlgorithmException{  
         /*
         *   Pred samotnym hashovanim si najskor musite ulozit instanciu hashovacieho algoritmu.
         *   Hash sa uklada ako bitovy retazec, takze ho nasledne treba skonvertovat na String (napr. cez BigInteger);
         */
-        long salt = getSalt(Long.MIN_VALUE, Long.MAX_VALUE);
         MessageDigest messDig = MessageDigest.getInstance( "SHA-256" );
         messDig.update( password.getBytes( StandardCharsets.UTF_8 ) );
         byte[] digest = messDig.digest();
@@ -137,12 +139,12 @@ public class Security {
     }
     
     protected static Boolean checkDict(String password) throws FileNotFoundException, IOException {
-
         DictionaryRule rule = new DictionaryRule(
             new WordListDictionary(WordLists.createFromReader(
             // Reader around the word list file
             //new FileReader[] {new FileReader("10k_most_common.txt")},
-            new FileReader[] {new FileReader("10_million_password_list_top_100000.txt")},
+                    
+            new FileReader[] {new FileReader(DICT_PATH + File.separator + "10-million-password-list-top-100000.txt")},
             // True for case sensitivity, false otherwise
             false,
             // Dictionaries must be sorted

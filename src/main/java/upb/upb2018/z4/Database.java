@@ -5,67 +5,122 @@
  */
 package upb.upb2018.z4;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.StringTokenizer;
-import javax.swing.JOptionPane;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
-public class Database {
-    
-    final static class MyResult {
-        private final boolean first;
-        private final String second;
+public class Database {    
+    public final static class Result {
+        private boolean result;
+        private String messsage;
+        private Osoba osoba;
+
+        public Result(boolean result, String message, Osoba osoba) {
+            this.result = result;
+            this.messsage = message;
+            this.osoba = osoba;
+        }
         
-        public MyResult(boolean first, String second) {
-            this.first = first;
-            this.second = second;
+        public Result(boolean result, String message) {
+            this.result = result;
+            this.messsage = message;
+            this.osoba = null;
         }
-        public boolean getFirst() {
-            return first;
+
+        public boolean isResult() {
+            return result;
         }
-        public String getSecond() {
-            return second;
+
+        public void setResult(boolean result) {
+            this.result = result;
+        }
+
+        public String getMesssage() {
+            return messsage;
+        }
+
+        public void setMesssage(String messsage) {
+            this.messsage = messsage;
+        }
+        
+        public Osoba getOsoba() {
+            return this.osoba;
+        }
+        
+        public void setOsoba(Osoba osoba) {
+            this.osoba = osoba;
+        }
+
+        @Override
+        public String toString() {
+            return "Result{" + "result=" + result + ", messsage=" + messsage + " ,osoba=" + osoba + "}";
         }
     }
     
-    protected static MyResult add(String fileName, String text) throws IOException{ 
-        if(exist(fileName, text))
-            return new MyResult(false, "Meno uz existuje");
-        FileWriter fw = new FileWriter(fileName, true);
-        fw.write(text + System.lineSeparator());
-        fw.close();    
-        return new MyResult(true, "");
+    private final EntityManagerFactory emf;
+    private EntityManager em;
+    
+    public Database() {
+        emf = Persistence.createEntityManagerFactory("upb2018PU");             
+    }
+
+    protected Result add(Osoba osoba) {
+        if (exist(osoba.getLogin())) {
+            return new Result(false, "Osoba uz existuje");
+        }        
+        persist(osoba);               
+        return new Result(true, "Uzivatel uspesne vytvoreny");
     }
     
-    protected static MyResult find(String fileName, String text) throws IOException{
-        File frJm = new File(fileName);
-        if (frJm.exists() == true){
-            FileReader fr = new FileReader(frJm);
-            BufferedReader bfr = new BufferedReader(fr);
-            String riadok = "";
-            String token = "";
-            
-            while ((riadok=bfr.readLine()) != null){
-                StringTokenizer st = new StringTokenizer(riadok, ":");
-                token = st.nextToken();
-                if (token.equals(text)){
-                    fr.close();
-                    MyResult mr = new MyResult(true, riadok);
-                    return mr;
-                }
+    protected Osoba get(String meno) {
+        Result r = find(meno);
+        System.out.println(r.getMesssage());
+        if(r.isResult()) {
+            return r.getOsoba();
+        }
+        else {
+            return null;
+        }
+    }
+
+    protected Result find(String meno) {        
+        try {       
+            em = emf.createEntityManager();    
+            TypedQuery<Osoba> q = em.createNamedQuery("Osoba.findByMeno", Osoba.class);
+            q.setParameter("login", meno);            
+            if (q.getResultList().size() > 0) {
+                for(Osoba o : q.getResultList()) {
+                    System.out.println(o);
+                    return new Result(true, "Osoba sa nasla", o);
+                }  
+            } else {      
+                return new Result(false, "Zadana osoba neexistuje");
             }
-            fr.close();   
-            return new MyResult(false, "Meno sa nenaslo");              
+        } catch (Exception e) {            
+            System.err.println("Pri nacitani osob z databazy nastala chyba " + e.getLocalizedMessage());
+        } finally {
+            em.close();
         }
-        return new MyResult(false, "Subor neexistuje");  
+        
+        return new Result(false, "Chyba");
     }
-    
-    protected static boolean exist(String fileName, String text) throws IOException{
-        StringTokenizer st = new StringTokenizer(text, ":");
-        return find(fileName, st.nextToken()).getFirst();
+
+    protected boolean exist(String meno) {        
+        return find(meno).isResult();
     }
-    
+
+    public void persist(Object object) {
+        try {
+            em = emf.createEntityManager();    
+            em.getTransaction().begin();
+            em.persist(object);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            System.err.println("Exception pri vytvarani uzivatela " + e.getLocalizedMessage());          
+            em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+    }
 }

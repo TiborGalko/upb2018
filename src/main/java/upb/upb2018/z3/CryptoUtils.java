@@ -115,6 +115,10 @@ public class CryptoUtils {
             cipher.init(cipherMode, key, new IvParameterSpec(iv));
                         
             byte[] outputBytes = cipher.doFinal(inputBytes);
+            
+            System.out.println("Dodesifrovane");
+            
+            System.out.println(new String(outputBytes));
 
             FileUtils.writeByteArrayToFile(outputFile, outputBytes);
 

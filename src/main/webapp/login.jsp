@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page session="false" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -19,11 +20,16 @@
     <body>
         <div class="container">
             <div class="jumbotron">
-                <h1 class="display-4">Login to UPB2018 z4</h1>
+                <h1 class="display-4">Login UPB2018</h1>
                 <hr class="my-4">             
-            </div>                
+                <%
+                final String message = (String) request.getAttribute ("message");                
+                if (message != null) { %> 
+                <script> alert("<%= message %>"); </script> 
+                <% } %>
+            </div>            
         <div>
-            <form action="login" method="post" enctype="multipart/form-data">
+            <form action="login" method="post">
                 <div class="form-group">
                     <label for="login">Meno:</label>
                     <input type="text" class="form-control" id="login" name="login" required>
