@@ -5,7 +5,7 @@
     <class>upb.upb2018.z4.Osoba</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://147.175.121.186:3306/upb?zeroDateTimeBehavior=convertToNull"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/upb?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.user" value="upb"/>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
       <property name="javax.persistence.jdbc.password" value="upbdb2018"/>
