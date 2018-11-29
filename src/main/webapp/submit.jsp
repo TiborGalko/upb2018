@@ -1,10 +1,11 @@
 <%-- 
     Document   : submit
     Created on : 29.11.2018, 15:42:28
-    Author     : Lenovo
+    Author     : Kika
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page session="false" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -53,7 +54,7 @@
             }
             #txt{
                 margin-left: 5%;
-                padding: 10%;
+                padding: 3%;
             }
         </style>
     </head>
@@ -65,9 +66,9 @@
                     <nav>
                         <ul>
                             <li><a href="encrypt">Encrypt</a></li>
-                            <li><a href="dencrypt">Dencrypt</a></li>
-                            <li><a href="submit">Submit document</a></li>
-                            <li><a href="share">Share document</a></li>
+                            <li><a href="decrypt">Decrypt</a></li>
+                            <li><a href="submit.jsp">Submit document</a></li>
+                            <li><a href="share.jsp">Share document</a></li>
                             <div id="logout">
                                 <li><a href="logout">Log out</a></li>
                             </div>
@@ -79,6 +80,9 @@
         </header>
         
         <div id="submit_place">
+            <div style="font-size: 17px; margin-left: 13%; padding: 5%;">
+                <b>Here you can upload and share your document with another registration user</b>
+            </div>
             <div id="txt">
                 <form action="upload" method="post" enctype="multipart/form-data">
                 <div class="form-group">

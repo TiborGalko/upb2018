@@ -46,7 +46,7 @@
                 <nav>
                     <ul>
                         <li><a href="encrypt">Encrypt</a></li>
-                        <li><a href="dencrypt">Dencrypt</a></li>
+                        <li><a href="decrypt">Decrypt</a></li>
                         <li><a href="submit">Submit document</a></li>
                         <li><a href="share">Share document</a></li>
                         <div id="logout">
@@ -58,13 +58,7 @@
             </table>
             </div>
         </header>        
-        <div class="container"> 
-            <%--<div class="jumbotron">
-                <h1 class="display-4">Encryption / Decryption tool</h1>
-                <hr class="my-4">
-                <a href="encrypt"><button class="btn btn-info"><i class="material-icons">lock</i><span>Encrypt</span></button></a>
-                <a href="logout"><button class="btn btn-danger float-right"><i class="material-icons">exit_to_app</i><span>Log out</span></button></a>
-            </div>--%>                
+        <div class="container">            
         <div>
             <h3>Choose file to decrypt</h3>
             <form action="upload" method="post" enctype="multipart/form-data">

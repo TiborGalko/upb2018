@@ -40,6 +40,12 @@
         <servlet-name>Access</servlet-name>
         <url-pattern>/decrypt</url-pattern>
     </servlet-mapping>
+        <servlet-name>Access</servlet-name>
+        <url-pattern>/submit</url-pattern>
+    </servlet-mapping>
+        <servlet-name>Access</servlet-name>
+        <url-pattern>/share</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Logout</servlet-name>
         <url-pattern>/logout</url-pattern>
@@ -62,6 +68,22 @@
         <web-resource-collection>
             <web-resource-name>Decrypt hidden page</web-resource-name>
             <url-pattern>/decrypt.jsp</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Submit hidden page</web-resource-name>
+            <url-pattern>/submit.jsp</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Share hidden page</web-resource-name>
+            <url-pattern>/share.jsp</url-pattern>
         </web-resource-collection>
         <auth-constraint>
         </auth-constraint>

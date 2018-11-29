@@ -1,10 +1,11 @@
 <%-- 
     Document   : page_1
     Created on : 29.11.2018, 15:36:18
-    Author     : Lenovo
+    Author     : Kika
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page session="false" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -107,9 +108,9 @@
                 <nav>
                     <ul>
                         <li><a href="encrypt">Encrypt</a></li>
-                        <li><a href="dencrypt">Dencrypt</a></li>
-                        <li><a href="submit">Submit document</a></li>
-                        <li><a href="share">Share document</a></li>
+                        <li><a href="decrypt">Decrypt</a></li>
+                        <li><a href="submit.jsp">Submit document</a></li>
+                        <li><a href="share.jsp">Share document</a></li>
                         <div id="logout">
                             <li><a href="logout">Log out</a></li>
                         </div>
