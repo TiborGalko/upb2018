@@ -12,7 +12,7 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     </head>
     <body>        
-        <div class="container">
+        <div class="container"> 
             <div class="jumbotron">
                 <h1 class="display-4">Encryption / Decryption tool</h1>
                 <hr class="my-4">
