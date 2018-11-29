@@ -72,9 +72,6 @@
             #logout{
                 margin-left: 91%
             }
-            #table__{
-                margin: 2% 18%;
-            }
             .table_{
                 margin: 0.5% 1%;
                 background-color: lightgray;
