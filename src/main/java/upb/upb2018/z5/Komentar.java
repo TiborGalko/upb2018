@@ -47,6 +47,9 @@ public class Komentar implements Serializable {
         
     @ManyToOne()
     private Osoba autor;
+    
+    @ManyToOne()
+    private Subor subor;
 
     public Long getId() {
         return id;
@@ -80,13 +83,22 @@ public class Komentar implements Serializable {
         this.autor = autor;
     }
 
+    public Subor getSubor() {
+        return subor;
+    }
+
+    public void setSubor(Subor subor) {
+        this.subor = subor;
+    }
+
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 71 * hash + Objects.hashCode(this.id);
-        hash = 71 * hash + Objects.hashCode(this.datum);
-        hash = 71 * hash + Objects.hashCode(this.obsah);
-        hash = 71 * hash + Objects.hashCode(this.autor);
+        int hash = 3;
+        hash = 53 * hash + Objects.hashCode(this.id);
+        hash = 53 * hash + Objects.hashCode(this.datum);
+        hash = 53 * hash + Objects.hashCode(this.obsah);
+        hash = 53 * hash + Objects.hashCode(this.autor);
+        hash = 53 * hash + Objects.hashCode(this.subor);
         return hash;
     }
 
@@ -111,11 +123,17 @@ public class Komentar implements Serializable {
         if (!Objects.equals(this.datum, other.datum)) {
             return false;
         }
-        return Objects.equals(this.autor, other.autor);
+        if (!Objects.equals(this.autor, other.autor)) {
+            return false;
+        }
+        if (!Objects.equals(this.subor, other.subor)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return "Komentar{" + "id=" + id + ", datum=" + datum + ", obsah=" + obsah + ", autor=" + autor + '}';
-    }   
+        return "Komentar{" + "id=" + id + ", datum=" + datum + ", obsah=" + obsah + ", autor=" + autor + ", subor=" + subor + '}';
+    }
 }
