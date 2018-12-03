@@ -20,6 +20,14 @@
         <servlet-name>Logout</servlet-name>
         <servlet-class>upb.upb2018.z4.Logout</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetUsers</servlet-name>
+        <servlet-class>upb.upb2018.z5.GetUserList</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FileSubmitHandler</servlet-name>
+        <servlet-class>upb.upb2018.z5.FileSubmitHandler</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>FileUploadHandler</servlet-name>
         <url-pattern>/upload</url-pattern>
@@ -51,6 +59,14 @@
     <servlet-mapping>
         <servlet-name>Logout</servlet-name>
         <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetUsers</servlet-name>
+        <url-pattern>/getuserlist</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FileSubmitHandler</servlet-name>
+        <url-pattern>/submitfile</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

@@ -5,6 +5,8 @@
  */
 package upb.upb2018.z4;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -108,6 +110,26 @@ public class Database {
 
     protected boolean exist(String meno) {        
         return find(meno).isResult();
+    }
+    
+    public List<String> getAllUsers() {
+        List<String> ret = new ArrayList();
+        try {       
+            em = emf.createEntityManager();    
+            TypedQuery<Osoba> q = em.createNamedQuery("Osoba.findAll", Osoba.class);        
+            if (q.getResultList().size() > 0) {
+                for(Osoba o : q.getResultList()) {
+                    ret.add(o.getLogin());
+                }  
+            } else {
+                System.out.println("ziadne osoby");
+            }
+        } catch (Exception e) {            
+            System.err.println("Pri nacitani osob z databazy nastala chyba " + e.getLocalizedMessage());
+        } finally {
+            em.close();            
+        }        
+        return ret;
     }
 
     public void persist(Object object) {

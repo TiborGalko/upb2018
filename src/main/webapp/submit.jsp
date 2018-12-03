@@ -10,7 +10,10 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>        
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -79,22 +82,35 @@
             </div>
         </header>
         
+        <script>
+            $( document ).ready(function() {
+                $.ajax({url: "getuserlist", success: function(result){
+                    var array = JSON.parse(result);
+                    var option = '';
+                    
+                    for(var i = 0; i < array.length; i++){
+                        option += '<option value="'+ array[i] + '">' + array[i] + '</option>';
+                    }
+                    
+                    $('#sel1').append(option);
+                }, error: function(error){
+                    console.log(error);
+                }});
+            });
+        </script>
+        
         <div id="submit_place">
             <div style="font-size: 17px; margin-left: 13%; padding: 5%;">
                 <b>Here you can upload and share your document with another registration user</b>
             </div>
             <div id="txt">
-                <form action="upload" method="post" enctype="multipart/form-data">
+                <form action="submitfile" method="post" enctype="multipart/form-data">
                 <div class="form-group">
-                    <input type="file" name="dec-file">
+                    <input type="file" name="file-name">
                 </div>
                 <div class="form-group">
                     <label for="sel1">Share with: </label>
-                    <select class="form-control" id="sel1">
-                        <option>Kika</option>
-                        <option>Tibor</option>
-                        <option>Juraj</option>
-                        <option>Karol</option>
+                    <select class="form-control" id="sel1" name="sel1">
                     </select>
                 </div>
                 <input type="submit" value="Submit" class="btn btn-primary">                

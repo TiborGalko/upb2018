@@ -28,7 +28,7 @@ import org.passay.dictionary.sort.ArraysSort;
 
 public class Security {
     
-    private static final String DICT_PATH = "C:\\Users\\karol\\Desktop\\Skola\\4.rocnik\\UPCB\\upb2018-kikas";
+    private static final String DICT_PATH = "/home/juraj/Documents";
 
     private static String hash(String password) throws NoSuchAlgorithmException{  
         /*
