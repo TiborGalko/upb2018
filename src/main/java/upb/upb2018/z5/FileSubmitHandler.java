@@ -16,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -43,6 +44,8 @@ public class FileSubmitHandler extends HttpServlet {
             throws ServletException, IOException {
       
         System.out.println(request.getParameter("sel1"));
+        HttpSession session = request.getSession(false);
+        String login = (String)session.getAttribute("login");
         
         //process only if its multipart content       
         if(ServletFileUpload.isMultipartContent(request)){

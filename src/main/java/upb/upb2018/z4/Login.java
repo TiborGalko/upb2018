@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import upb.upb2018.z4.Database.Result;
 
 public class Login extends HttpServlet {
@@ -31,7 +32,8 @@ public class Login extends HttpServlet {
             System.out.println(result.getMesssage());
             if (result.isResult()) {
                 //vytvorenie session
-                request.getSession(true);
+                HttpSession session = request.getSession(true);
+                session.setAttribute("login", login);
                 response.sendRedirect("encrypt");
                 //request.setAttribute("message", result.getMesssage());
             } else {                
