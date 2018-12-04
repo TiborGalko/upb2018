@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
+import upb.upb2018.z5.Subor;
 
 public class Database {    
     public final static class Result {
@@ -75,7 +76,7 @@ public class Database {
         return new Result(true, "Uzivatel uspesne vytvoreny");
     }
     
-    protected Osoba get(String meno) {
+    public Osoba get(String meno) {
         Result r = find(meno);
         System.out.println(r.getMesssage());
         if(r.isResult()) {
@@ -84,6 +85,24 @@ public class Database {
         else {
             return null;
         }
+    }
+    
+    public Subor getFile(String meno) {
+        try {       
+            em = emf.createEntityManager();    
+            TypedQuery<Subor> q = em.createNamedQuery("Subor.findByMeno", Subor.class);
+            q.setParameter("nazov", meno);            
+            if (q.getResultList().size() > 0) {
+                return q.getResultList().get(0);
+            } else {      
+                return null;
+            }
+        } catch (Exception e) {            
+            System.err.println("Pri nacitani suboru z databazy nastala chyba " + e.getLocalizedMessage());
+        } finally {
+            em.close();
+        }
+        return null;
     }
 
     protected Result find(String meno) {        
@@ -110,26 +129,6 @@ public class Database {
 
     protected boolean exist(String meno) {        
         return find(meno).isResult();
-    }
-    
-    public List<String> getAllUsers() {
-        List<String> ret = new ArrayList();
-        try {       
-            em = emf.createEntityManager();    
-            TypedQuery<Osoba> q = em.createNamedQuery("Osoba.findAll", Osoba.class);        
-            if (q.getResultList().size() > 0) {
-                for(Osoba o : q.getResultList()) {
-                    ret.add(o.getLogin());
-                }  
-            } else {
-                System.out.println("ziadne osoby");
-            }
-        } catch (Exception e) {            
-            System.err.println("Pri nacitani osob z databazy nastala chyba " + e.getLocalizedMessage());
-        } finally {
-            em.close();            
-        }        
-        return ret;
     }
 
     public void persist(Object object) {

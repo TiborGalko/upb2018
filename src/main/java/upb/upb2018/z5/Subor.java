@@ -17,6 +17,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import upb.upb2018.z4.Osoba;
 
 /**
@@ -24,6 +26,10 @@ import upb.upb2018.z4.Osoba;
  * @author h
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(name = "Subor.findAll", query = "SELECT o FROM Subor o")
+    , @NamedQuery(name = "Subor.findById", query = "SELECT o FROM Subor o WHERE o.id = :id")
+    , @NamedQuery(name = "Subor.findByMeno", query = "SELECT o FROM Subor o WHERE o.nazov = :nazov")})
 public class Subor implements Serializable {
 
     private static final long serialVersionUID = 1L;

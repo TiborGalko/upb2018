@@ -141,6 +141,11 @@
         </style>
     </head>
     <body>
+        <%
+            final String message = (String) request.getAttribute ("message");                
+            if (message != null) { %> 
+                <script> alert("<%= message %>"); </script> 
+        <% } %>
         <header>
             <div class="table_">
             <table>
