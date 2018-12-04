@@ -47,7 +47,6 @@
                     <ul>
                         <li><a href="encrypt">Encrypt</a></li>
                         <li><a href="decrypt">Decrypt</a></li>
-                        <li><a href="submit">Submit document</a></li>
                         <li><a href="share">Share document</a></li>
                         <div id="logout">
                             <li><a href="logout">Log out</a></li>

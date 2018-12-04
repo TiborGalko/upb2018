@@ -98,6 +98,46 @@
             #td_tr{
                 font-size: 17px;
             }
+            #submit_place{
+                margin: 5% 18%;
+                background-color: lightgray;
+                height: 300px;
+                width: 60%;
+                border-radius: 25px 25px;
+                font-size: 17px;
+            }
+            #logout{
+                margin-left: 91%
+            }
+            #table__{
+                margin: 2% 18%;
+            }
+            .table_{
+                margin: 0.5% 1%;
+                background-color: lightgray;
+                height: 80px;
+                width: 98%;
+                border-radius: 50px 25px
+            }
+            nav ul{
+                margin: 0 1%;
+                list-style-type: none;
+            }
+            nav ul li{
+                float: left;
+                padding: 0 1%;
+                margin: 0 5px;
+                font-size: 25px;
+                height: 73px;
+                line-height: 3.2em;
+            }
+            a{
+                color: black;
+            }
+            #txt{
+                margin-left: 5%;
+                padding: 3%;
+            }
         </style>
     </head>
     <body>
@@ -109,7 +149,6 @@
                     <ul>
                         <li><a href="encrypt">Encrypt</a></li>
                         <li><a href="decrypt">Decrypt</a></li>
-                        <li><a href="submit">Submit document</a></li>
                         <li><a href="share">Share document</a></li>
                         <div id="logout">
                             <li><a href="logout">Log out</a></li>
@@ -120,6 +159,24 @@
             </table>
             </div>
         </header>
+        
+        <div id="submit_place">
+            <div style="font-size: 17px; margin-left: 13%; padding: 5%;">
+                <b>Here you can upload and share your document with another registration user</b>
+            </div>
+            <div id="txt">
+                <form action="submitfile" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <input type="file" name="file-name">
+                </div>
+                <div class="form-group">
+                    <label for="sel1">Share with: </label>
+                    <input type="text" name="share-with">
+                </div>
+                <input type="submit" value="Submit" class="btn btn-primary btn-lg">                
+            </form>    
+            </div>
+        </div>
         
         <div id="td_tr">
             <div class="container col-6">

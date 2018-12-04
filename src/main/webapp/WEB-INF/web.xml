@@ -21,10 +21,6 @@
         <servlet-class>upb.upb2018.z4.Logout</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetUsers</servlet-name>
-        <servlet-class>upb.upb2018.z5.GetUserList</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>FileSubmitHandler</servlet-name>
         <servlet-class>upb.upb2018.z5.FileSubmitHandler</servlet-class>
     </servlet>
@@ -50,19 +46,11 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Access</servlet-name>
-        <url-pattern>/submit</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Access</servlet-name>
         <url-pattern>/share</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Logout</servlet-name>
         <url-pattern>/logout</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetUsers</servlet-name>
-        <url-pattern>/getuserlist</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>FileSubmitHandler</servlet-name>
@@ -86,14 +74,6 @@
         <web-resource-collection>
             <web-resource-name>Decrypt hidden page</web-resource-name>
             <url-pattern>/decrypt.jsp</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-        </auth-constraint>
-    </security-constraint>
-    <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>Submit hidden page</web-resource-name>
-            <url-pattern>/submit.jsp</url-pattern>
         </web-resource-collection>
         <auth-constraint>
         </auth-constraint>
