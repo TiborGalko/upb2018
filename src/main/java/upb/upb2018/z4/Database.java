@@ -114,9 +114,19 @@ public class Database {
             if (q.getResultList().size() > 0) {
                 for(Subor s : q.getResultList()) {
                     ret.add(s.getNazov());
-} 
-            } else {      
-                return null;
+                } 
+            } 
+            
+            TypedQuery<Subor> q1 = em.createNamedQuery("Subor.findAll", Subor.class);
+            if (q1.getResultList().size() > 0) {
+                for(Subor s : q1.getResultList()) {
+                    List<Osoba> o = s.getZdielajuci();
+                    for(Osoba os : o){
+                        if(os.getLogin().equals(login)){
+                            ret.add(s.getNazov());
+                        }
+                    }
+                } 
             }
         } catch (Exception e) {            
             System.err.println("Pri nacitani suboru z databazy nastala chyba " + e.getLocalizedMessage());

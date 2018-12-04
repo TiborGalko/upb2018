@@ -192,7 +192,6 @@
                 $.ajax({url: "filetable", success: function(result){
                     var array = JSON.parse(result);
                     var option = '';
-                    option += '<tr>' + '<th>' + '<a href="#openModal">' + 'test' + '</a>' + '</td>' + '<td>Download</td> <td>Delete</td></tr>' ;
                     for(var i = 0; i < array.length; i++){
                         option += '<tr>' + '<th>' + '<a href="#openModal">' + array[i] + '</a>' + '</td>' + '<td>Download</td> <td>Delete</td></tr>' ;
                     }
