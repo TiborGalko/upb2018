@@ -13,10 +13,10 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-         <script
+        <script
             src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-            crossorigin="anonymous"></script>
+        crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -35,7 +35,7 @@
                 -webkit-transition: opacity 400ms ease-in;
                 -moz-transition: opacity 400ms ease-in;
                 transition: opacity 400ms ease-in;
-                pointer-events: none;
+                pointer-events: none;           
             }
             .modalDialog:target {
                 opacity:1;
@@ -136,75 +136,88 @@
             }
             a{
                 color: black;
+            }            
+            #commentInput {
+                width: 100%;
+                margin-bottom: 10px;
             }
-            #txt{
-                margin-left: 5%;
-                padding: 3%;
-            }
+            td:hover {
+                background-color: lightgray;
+            } 
         </style>
     </head>
     <body>
         <%
-            final String message = (String) request.getAttribute ("message");                
-            if (message != null) { %> 
-                <script> alert("<%= message %>"); </script> 
-        <% } %> 
+            final String message = (String) request.getAttribute("message");
+            if (message != null) {%> 
+        <script> alert("<%= message%>");</script> 
+        <% }%> 
         <header>
             <div class="table_">
-            <table>
-                <tr>
-                <nav>
-                    <ul>
-                        <li><a href="encrypt">Encrypt</a></li>
-                        <li><a href="decrypt">Decrypt</a></li>
-                        <li><a href="share">Share document</a></li>
-                        <div id="logout">
-                            <li><a href="logout">Log out</a></li>
-                        </div>
-                    </ul>
-                </nav>
-            </tr>
-            </table>
+                <table>
+                    <tr>
+                    <nav>
+                        <ul>
+                            <li><a href="encrypt">Encrypt</a></li>
+                            <li><a href="decrypt">Decrypt</a></li>
+                            <li><a href="share">Share document</a></li>
+                            <div id="logout">
+                                <li><a href="logout">Log out</a></li>
+                            </div>
+                        </ul>
+                    </nav>
+                    </tr>
+                </table>
             </div>
         </header>
-        
+
         <div id="submit_place">
             <div style="font-size: 17px; margin-left: 13%; padding: 5%;">
                 <b>Here you can upload and share your document with another registered user.<br>
                     File with same name will be overwritten.
                 </b>
             </div>
-            <div id="txt">
-                <form action="submitfile" method="post" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <input type="file" name="file-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="sel1">Share with: </label>
-                        <input type="text" name="share-with" required>
-                    </div>
-                    <input type="submit" value="Submit" class="btn btn-primary btn-lg">                
-                </form>    
-            </div>
         </div>
-        
+
         <script>
-            console.log("script");
-            $( document ).ready(function() {
-                $.ajax({url: "filetable", success: function(result){
-                    var array = JSON.parse(result);
-                    var option = '';
-                    for(var i = 0; i < array.length; i++){
-                        option += '<tr>' + '<th>' + '<a href="#openModal">' + array[i] + '</a>' + '</td>' + '<td>Download</td> <td>Delete</td></tr>' ;
-                    }
-                    
-                    $('#table1').append(option);
-                }, error: function(error){
-                    console.log(error);
-                }});
+            console.log("script");    
+            $(document).ready(function () {
+                $.ajax({url: "filetable", success: function (result) {
+                        var array = JSON.parse(result);
+                        var option = '';
+                        for (var i = 0; i < array.length; i++) {
+                            option += '<tr>' +
+                                    '<td onclick="openDetailsModal(\'' + array[i] + '\')"><a href="#openModal">' + array[i] + '</a></td>' +
+                                    '<td onclick="openCommentsModal(\'' + array[i] + '\')"><a href="#openComment">Comment</a></td>' +
+                                    '<td>Download</td><td>Delete</td>' +
+                                    '</tr>';
+                        }
+
+                        $('#table1').append(option);
+                    }, error: function (error) {
+                        console.log(error);
+                    }});
             });
+            function openDetailsModal(field) {
+                console.log(field);
+                $("#fileName").val(field);
+                $.ajax({
+                    url: "filetable",
+                    type: "POST",        
+                    data: 'FileTableHandler='+name+'&filename='+field,
+                    success: function (result) {
+                        var array = JSON.parse(result);
+                        console.log(array);
+                    }, error: function (error) {
+                        console.log(error);
+                    }
+                });
+            }
+            function openCommentsModal(field) {
+                $("#fileNameComment").val(field);
+            }
         </script>
-        
+
         <div id="td_tr">
             <div class="container col-6">
                 <table class="table">
@@ -213,24 +226,45 @@
                             <th>Name of document</th>
                             <th></th>
                             <th></th>
+                            <th></th>
                         </tr>
                     </thead>                
                 </table>       
-            </div>
-            <div id="openModal" class="modalDialog">
+            </div>            
+        </div>
+        <div id="openModal" class="modalDialog">
             <div>
                 <a href="#close" title="Close" class="close">X</a>
-                <h2>Detials:</h2>
-                <p>Name of document: </p>
-                <p>Put: </p>
-                <p>Date: </p>
+                <h2>Details:</h2>
+                <p id="detailFile">Name of document: </p>
+                <p id="detailAutor">Put: </p>
+                <p id="detailDate">Date: </p>
                 <div>
-                    <form>
-                        <input type="text" name="comment" placeholder="Write a comment">
-                    </form>
+                    <form action="submitfile" method="post">
+                        <input type="hidden" id="fileName" name="fileName" value="#">
+                        <div class="form-group">
+                            <label for="sel1">Share with: </label>
+                            <input type="text" name="share-with" required>
+                        </div>
+                        <input type="submit" value="Submit" class="btn btn-primary btn-lg">                
+                    </form> 
                 </div>
             </div>
         </div>
-    </div>
-</body>
+        <div id="openComment" class="modalDialog">
+            <div>
+                <a href="#close" title="Close" class="close">X</a>
+                <h2>Add a comment</h2>                
+                <div>
+                    <form action="submitfile" method="post">
+                        <input type="hidden" id="fileNameComment" name="fileNameComment" value="#">                        
+                        <div>                               
+                            <input type="text" id="commentInput" name="comment" placeholder="Write a comment"> 
+                        </div>
+                        <input type="submit" value="Submit" class="btn btn-primary btn-lg">                
+                    </form> 
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

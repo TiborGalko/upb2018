@@ -6,11 +6,13 @@
 package upb.upb2018.z4;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
+import upb.upb2018.z5.Komentar;
 import upb.upb2018.z5.Subor;
 
 public class Database {
@@ -20,11 +22,19 @@ public class Database {
         private boolean result;
         private String messsage;
         private Osoba osoba;
+        private Subor subor;
 
         public Result(boolean result, String message, Osoba osoba) {
             this.result = result;
             this.messsage = message;
             this.osoba = osoba;
+        }
+
+        public Result(boolean result, String message, Subor subor) {
+            this.result = result;
+            this.messsage = message;
+            this.osoba = null;
+            this.subor = subor;
         }
 
         public Result(boolean result, String message) {
@@ -97,7 +107,7 @@ public class Database {
     public Subor getFile(String meno) {
         try {
             em = emf.createEntityManager();
-            TypedQuery<Subor> q = em.createNamedQuery("Subor.findByMeno", Subor.class);
+            TypedQuery<Subor> q = em.createNamedQuery("Subor.findByNazov", Subor.class);
             q.setParameter("nazov", meno);
             if (q.getResultList().size() > 0) {
                 return q.getResultList().get(0);
@@ -122,7 +132,7 @@ public class Database {
         List<String> ret = new ArrayList();
         try {
             em = emf.createEntityManager();
-            TypedQuery<Subor> q = em.createNamedQuery("Subor.findByOsoba", Subor.class);
+            TypedQuery<Subor> q = em.createNamedQuery("Subor.findByAutorLogin", Subor.class);
             q.setParameter("login", login);
             if (q.getResultList().size() > 0) {
                 for (Subor s : q.getResultList()) {
@@ -149,16 +159,76 @@ public class Database {
         return ret;
     }
 
-    public Result saveFileToDB(Osoba autor, String fileName, Osoba prijemca) {
-        if(autor == null || fileName.isEmpty() || prijemca == null) {
+    public Result saveFileToDB(Osoba autor, String fileName) {
+        if (autor == null || fileName.isEmpty()) {
             return new Result(false, "Zle zadane argumenty"); //osetrenie aby sa nezapisovali blbosti do db
         }
         Subor subor = new Subor(); // list sa vytvori v konstruktore
         subor.setAutor(autor);
         subor.setNazov(fileName);
-        subor.getZdielajuci().add(prijemca);
+
         persist(subor);
         return new Result(true, "Subor uspesne pridany");
+    }
+
+    public Result addPrijemcaToFile(String fileName, Osoba prijemca) {
+        try {
+            em = emf.createEntityManager();
+            TypedQuery<Subor> q = em.createNamedQuery("Subor.findByNazov", Subor.class);
+            q.setParameter("nazov", fileName);
+            if (q.getResultList().size() > 0) {
+                for (Subor s : q.getResultList()) {
+                    em.getTransaction().begin();
+                    s.getZdielajuci().add(prijemca);
+                    em.getTransaction().commit();
+                    return new Result(true, "Subor uspesne zdielany");
+                }
+            } else {
+                return new Result(false, "Subor neexistuje");
+            }
+        } catch (Exception e) {
+            System.err.println("Pri nacitani suborov z databazy nastala chyba " + e.getLocalizedMessage());
+            em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+
+        return new Result(false, "Chyba");
+    }
+    
+    public Result addComment(String filename, String komentar, Osoba autor) {
+        if(filename.isEmpty() || komentar.isEmpty()) {
+            return new Result(false,"Zle parametre");
+        }
+        Komentar k = new Komentar();
+        k.setAutor(autor);
+        k.setDatum(new Date());
+        k.setObsah(komentar);        
+        autor.getKomentare().add(k);        
+        persist(k);        
+        return new Result(true, "Komentar pridany");
+    }
+
+    public String checkFileName(String fileName) {
+        String[] tokens = fileName.split("\\."); // rozdeli cez bodky
+        String newName = tokens[0]; // zobere nazov
+        StringBuilder builder = new StringBuilder();
+
+        int i = 1;
+        while (getFile(newName) != null) {
+            if (i > 1) {
+                newName = newName.substring(0, newName.length() - 4); // odstrani cislovanie ak bolo pridane
+            }
+            newName += " (" + i + ")";
+            tokens[0] = newName;
+
+            for (String s : tokens) {
+                builder.append(s); // vytvori novy string
+            }
+            newName = builder.toString();
+            i++;
+        }
+        return newName;
     }
 
     private Result find(String meno) {

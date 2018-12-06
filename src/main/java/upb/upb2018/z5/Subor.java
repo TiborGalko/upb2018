@@ -28,10 +28,10 @@ import upb.upb2018.z4.Osoba;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "Subor.findAll", query = "SELECT o FROM Subor o")
-    , @NamedQuery(name = "Subor.findById", query = "SELECT o FROM Subor o WHERE o.id = :id")
-    , @NamedQuery(name = "Subor.findByOsoba", query = "SELECT o FROM Subor o WHERE o.autor.login = :login")
-    , @NamedQuery(name = "Subor.findByMeno", query = "SELECT o FROM Subor o WHERE o.nazov = :nazov")})
+    @NamedQuery(name = "Subor.findAll", query = "SELECT s FROM Subor s")
+    , @NamedQuery(name = "Subor.findById", query = "SELECT s FROM Subor s WHERE s.id = :id")
+    , @NamedQuery(name = "Subor.findByAutorLogin", query = "SELECT s FROM Subor s WHERE s.autor.login = :login")
+    , @NamedQuery(name = "Subor.findByNazov", query = "SELECT s FROM Subor s WHERE s.nazov = :nazov")})
 public class Subor implements Serializable {
 
     private static final long serialVersionUID = 1L;
