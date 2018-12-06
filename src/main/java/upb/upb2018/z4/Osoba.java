@@ -6,6 +6,7 @@
 package upb.upb2018.z4;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.Basic;
@@ -65,6 +66,9 @@ public class Osoba implements Serializable {
         this.login = login;
         this.password = password;
         this.salt = salt;
+        subory = new ArrayList<>();
+        zdielaneSubory = new ArrayList<>();
+        komentare = new ArrayList<>();
     }  
 
     public Long getId() {

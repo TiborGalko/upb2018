@@ -13,8 +13,10 @@ import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import upb.upb2018.z5.Subor;
 
-public class Database {    
+public class Database {
+
     public final static class Result {
+
         private boolean result;
         private String messsage;
         private Osoba osoba;
@@ -24,7 +26,7 @@ public class Database {
             this.messsage = message;
             this.osoba = osoba;
         }
-        
+
         public Result(boolean result, String message) {
             this.result = result;
             this.messsage = message;
@@ -46,11 +48,11 @@ public class Database {
         public void setMesssage(String messsage) {
             this.messsage = messsage;
         }
-        
+
         public Osoba getOsoba() {
             return this.osoba;
         }
-        
+
         public void setOsoba(Osoba osoba) {
             this.osoba = osoba;
         }
@@ -60,75 +62,86 @@ public class Database {
             return "Result{" + "result=" + result + ", messsage=" + messsage + " ,osoba=" + osoba + "}";
         }
     }
-    
+
     private final EntityManagerFactory emf;
     private EntityManager em;
-    
+
     public Database() {
-        emf = Persistence.createEntityManagerFactory("upb2018PU");             
+        emf = Persistence.createEntityManagerFactory("upb2018PU");
     }
 
     protected Result add(Osoba osoba) {
-        if (exist(osoba.getLogin())) {
+        if (osobaExist(osoba.getLogin())) {
             return new Result(false, "Osoba uz existuje");
-        }        
-        persist(osoba);               
+        }
+        persist(osoba);
         return new Result(true, "Uzivatel uspesne vytvoreny");
     }
-    
+
     public Osoba get(String meno) {
         Result r = find(meno);
         System.out.println(r.getMesssage());
-        if(r.isResult()) {
+        if (r.isResult()) {
             return r.getOsoba();
-        }
-        else {
+        } else {
             return null;
         }
     }
-    
+
+    /**
+     * Nacita subor pre usera z databazy
+     *
+     * @param meno username
+     * @return Subor object
+     */
     public Subor getFile(String meno) {
-        try {       
-            em = emf.createEntityManager();    
+        try {
+            em = emf.createEntityManager();
             TypedQuery<Subor> q = em.createNamedQuery("Subor.findByMeno", Subor.class);
-            q.setParameter("nazov", meno);            
+            q.setParameter("nazov", meno);
             if (q.getResultList().size() > 0) {
                 return q.getResultList().get(0);
-            } else {      
+            } else {
                 return null;
             }
-        } catch (Exception e) {            
+        } catch (Exception e) {
             System.err.println("Pri nacitani suboru z databazy nastala chyba " + e.getLocalizedMessage());
         } finally {
             em.close();
         }
         return null;
     }
-    
-    public List<String> getAllfiles(String login){
+
+    /**
+     * Nacita vsetky subory pre usera z databazy
+     *
+     * @param login username
+     * @return List nazvov suborov
+     */
+    public List<String> getAllfiles(String login) {
         List<String> ret = new ArrayList();
-    try {       
-            em = emf.createEntityManager();    
+        try {
+            em = emf.createEntityManager();
             TypedQuery<Subor> q = em.createNamedQuery("Subor.findByOsoba", Subor.class);
             q.setParameter("login", login);
             if (q.getResultList().size() > 0) {
-                for(Subor s : q.getResultList()) {
+                for (Subor s : q.getResultList()) {
                     ret.add(s.getNazov());
-                } 
-            } 
-            
+                }
+            }
+
             TypedQuery<Subor> q1 = em.createNamedQuery("Subor.findAll", Subor.class);
             if (q1.getResultList().size() > 0) {
-                for(Subor s : q1.getResultList()) {
+                for (Subor s : q1.getResultList()) {
                     List<Osoba> o = s.getZdielajuci();
-                    for(Osoba os : o){
-                        if(os.getLogin().equals(login)){
+                    for (Osoba os : o) {
+                        if (os.getLogin().equals(login)) {
                             ret.add(s.getNazov());
                         }
                     }
-                } 
+                }
             }
-        } catch (Exception e) {            
+        } catch (Exception e) {
             System.err.println("Pri nacitani suboru z databazy nastala chyba " + e.getLocalizedMessage());
         } finally {
             em.close();
@@ -136,40 +149,52 @@ public class Database {
         return ret;
     }
 
-    protected Result find(String meno) {        
-        try {       
-            em = emf.createEntityManager();    
+    public Result saveFileToDB(Osoba autor, String fileName, Osoba prijemca) {
+        if(autor == null || fileName.isEmpty() || prijemca == null) {
+            return new Result(false, "Zle zadane argumenty"); //osetrenie aby sa nezapisovali blbosti do db
+        }
+        Subor subor = new Subor(); // list sa vytvori v konstruktore
+        subor.setAutor(autor);
+        subor.setNazov(fileName);
+        subor.getZdielajuci().add(prijemca);
+        persist(subor);
+        return new Result(true, "Subor uspesne pridany");
+    }
+
+    private Result find(String meno) {
+        try {
+            em = emf.createEntityManager();
             TypedQuery<Osoba> q = em.createNamedQuery("Osoba.findByMeno", Osoba.class);
-            q.setParameter("login", meno);            
+            q.setParameter("login", meno);
             if (q.getResultList().size() > 0) {
-                for(Osoba o : q.getResultList()) {
+                for (Osoba o : q.getResultList()) {
                     System.out.println(o);
                     return new Result(true, "Osoba sa nasla", o);
-                }  
-            } else {      
+                }
+            } else {
                 return new Result(false, "Zadana osoba neexistuje");
             }
-        } catch (Exception e) {            
+        } catch (Exception e) {
             System.err.println("Pri nacitani osob z databazy nastala chyba " + e.getLocalizedMessage());
         } finally {
             em.close();
         }
-        
+
         return new Result(false, "Chyba");
     }
 
-    protected boolean exist(String meno) {        
+    private boolean osobaExist(String meno) {
         return find(meno).isResult();
     }
 
     public void persist(Object object) {
         try {
-            em = emf.createEntityManager();    
+            em = emf.createEntityManager();
             em.getTransaction().begin();
             em.persist(object);
             em.getTransaction().commit();
         } catch (Exception e) {
-            System.err.println("Exception pri vytvarani uzivatela " + e.getLocalizedMessage());          
+            System.err.println("Exception pri vytvarani uzivatela " + e.getLocalizedMessage());
             em.getTransaction().rollback();
         } finally {
             em.close();

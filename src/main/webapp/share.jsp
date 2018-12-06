@@ -170,19 +170,21 @@
         
         <div id="submit_place">
             <div style="font-size: 17px; margin-left: 13%; padding: 5%;">
-                <b>Here you can upload and share your document with another registration user</b>
+                <b>Here you can upload and share your document with another registered user.<br>
+                    File with same name will be overwritten.
+                </b>
             </div>
             <div id="txt">
                 <form action="submitfile" method="post" enctype="multipart/form-data">
-                <div class="form-group">
-                    <input type="file" name="file-name">
-                </div>
-                <div class="form-group">
-                    <label for="sel1">Share with: </label>
-                    <input type="text" name="share-with">
-                </div>
-                <input type="submit" value="Submit" class="btn btn-primary btn-lg">                
-            </form>    
+                    <div class="form-group">
+                        <input type="file" name="file-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sel1">Share with: </label>
+                        <input type="text" name="share-with" required>
+                    </div>
+                    <input type="submit" value="Submit" class="btn btn-primary btn-lg">                
+                </form>    
             </div>
         </div>
         
