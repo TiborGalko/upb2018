@@ -105,21 +105,18 @@ public class Database {
      * @return Subor object
      */
     public Subor getFile(String meno) {
-        try {
-            em = emf.createEntityManager();
-            TypedQuery<Subor> q = em.createNamedQuery("Subor.findByNazov", Subor.class);
-            q.setParameter("nazov", meno);
-            if (q.getResultList().size() > 0) {
-                return q.getResultList().get(0);
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            System.err.println("Pri nacitani suboru z databazy nastala chyba " + e.getLocalizedMessage());
-        } finally {
-            em.close();
+        EntityManager entityManager;
+        entityManager = emf.createEntityManager();
+        TypedQuery<Subor> q = entityManager.createNamedQuery("Subor.findByNazov", Subor.class);
+        q.setParameter("nazov", meno);
+        Subor out;
+        if (q.getResultList().size() > 0) {
+            out = q.getResultList().get(0);
+        } else {
+            out = null;
         }
-        return null;
+        entityManager.close();
+        return out;
     }
 
     /**
@@ -130,32 +127,30 @@ public class Database {
      */
     public List<String> getAllfiles(String login) {
         List<String> ret = new ArrayList();
-        try {
-            em = emf.createEntityManager();
-            TypedQuery<Subor> q = em.createNamedQuery("Subor.findByAutorLogin", Subor.class);
-            q.setParameter("login", login);
-            if (q.getResultList().size() > 0) {
-                for (Subor s : q.getResultList()) {
-                    ret.add(s.getNazov());
-                }
+        EntityManager entityManager;
+        entityManager = emf.createEntityManager();
+        // Najde subory autora
+        TypedQuery<Subor> q = entityManager.createNamedQuery("Subor.findByAutorLogin", Subor.class);
+        q.setParameter("login", login);
+        if (q.getResultList().size() > 0) {
+            for (Subor s : q.getResultList()) {
+                ret.add(s.getNazov());
             }
+        }
 
-            TypedQuery<Subor> q1 = em.createNamedQuery("Subor.findAll", Subor.class);
-            if (q1.getResultList().size() > 0) {
-                for (Subor s : q1.getResultList()) {
-                    List<Osoba> o = s.getZdielajuci();
-                    for (Osoba os : o) {
-                        if (os.getLogin().equals(login)) {
-                            ret.add(s.getNazov());
-                        }
+        // Prida aj zdielane subory
+        TypedQuery<Subor> q1 = entityManager.createNamedQuery("Subor.findAll", Subor.class);
+        if (q1.getResultList().size() > 0) {
+            for (Subor s : q1.getResultList()) {
+                List<Osoba> o = s.getZdielajuci();
+                for (Osoba os : o) {
+                    if (os.getLogin().equals(login)) {
+                        ret.add(s.getNazov());
                     }
                 }
             }
-        } catch (Exception e) {
-            System.err.println("Pri nacitani suboru z databazy nastala chyba " + e.getLocalizedMessage());
-        } finally {
-            em.close();
         }
+        entityManager.close();
         return ret;
     }
 
@@ -169,6 +164,28 @@ public class Database {
 
         persist(subor);
         return new Result(true, "Subor uspesne pridany");
+    }
+
+    public Result deleteFile(String filename) {
+        if (filename == null) {
+            return new Result(false, "Zle zadane argumenty"); //osetrenie aby sa nezapisovali blbosti do db
+        }
+        Subor subor = getFile(filename);
+        if (subor == null) {
+            return new Result(false, "Chyba"); //osetrenie aby sa nezapisovali blbosti do db
+        }
+        try {
+            em = emf.createEntityManager();
+            em.getTransaction().begin();
+            em.remove(subor);
+            em.getTransaction().commit();            
+        } catch (Exception e) {
+            System.err.println("Pri nacitani suborov z databazy nastala chyba " + e.getLocalizedMessage());
+            em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+        return new Result(true, "Vymazanie uspesne");
     }
 
     public Result addPrijemcaToFile(String fileName, Osoba prijemca) {
@@ -192,21 +209,50 @@ public class Database {
         } finally {
             em.close();
         }
-
         return new Result(false, "Chyba");
     }
-    
+
     public Result addComment(String filename, String komentar, Osoba autor) {
-        if(filename.isEmpty() || komentar.isEmpty()) {
-            return new Result(false,"Zle parametre");
+        if (filename == null || komentar == null) {
+            return new Result(false, "Zle parametre");
         }
+        Subor s = getFile(filename);
         Komentar k = new Komentar();
         k.setAutor(autor);
+        k.setParent(s);
         k.setDatum(new Date());
-        k.setObsah(komentar);        
-        autor.getKomentare().add(k);        
-        persist(k);        
+        k.setObsah(komentar);
+        autor.getKomentare().add(k);
+        persist(k);
         return new Result(true, "Komentar pridany");
+    }
+
+    /**
+     * Ak nastane chyba list ma velkost nula
+     *
+     * @param fileName
+     * @return
+     */
+    public List<String> getAllCommentsByFileName(String fileName) {
+        List<String> list = new ArrayList<>();
+        EntityManager entityManager;
+        entityManager = emf.createEntityManager();
+        System.out.println("EM IS : " + entityManager.isOpen());
+
+        Subor s = getFile(fileName);
+
+        if (s != null) {
+            TypedQuery<Komentar> q = entityManager.createNamedQuery("Komentar.findAll", Komentar.class);
+            if (q.getResultList().size() > 0) {
+                for (Komentar k : q.getResultList()) {
+                    if (k.getParent().equals(s)) {
+                        list.add(k.getObsah());
+                    }
+                }
+            }
+        }
+        entityManager.close();
+        return list;
     }
 
     public String checkFileName(String fileName) {

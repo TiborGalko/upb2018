@@ -39,38 +39,29 @@
         </style>
     </head>
     <body>
-          <header>
-            <div class="table_">
-            <table>
-            <tr>
-                <nav>
-                    <ul>
-                        <li><a href="encrypt">Encrypt</a></li>
-                        <li><a href="decrypt">Decrypt</a></li>
-                        <li><a href="share">Share document</a></li>
-                        <div id="logout">
-                            <li><a href="logout">Log out</a></li>
-                        </div>
-                    </ul>
-                </nav>
-            </tr>
-            </table>
-            </div>
-        </header>
+        <nav class="table_">
+            <ul>
+                <li><a href="encrypt">Encrypt</a></li>
+                <li><a href="decrypt">Decrypt</a></li>        
+                <div id="logout">
+                    <li><a href="logout">Log out</a></li>
+                </div>
+            </ul>
+        </nav> 
         <div class="container">          
-        <div>
-            <h3>Choose file to encrypt</h3>
-            <form action="upload" method="post" enctype="multipart/form-data">
-                <div class="form-group">
-                    <input type="file" name="enc-file">
-                </div>
-                <div class="form-group">
-                    <label for="enc-rsa-pk">RSA public key:</label>
-                    <input type="text" class="form-control" id="enc-rsa-pk" name="enc-rsa-pk" required>
-                </div>
-                <input type="submit" value="Encrypt" class="btn btn-primary">                
-            </form>            
-        </div>
+            <div>
+                <h3>Choose file to encrypt</h3>
+                <form action="upload" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <input type="file" name="enc-file">
+                    </div>
+                    <div class="form-group">
+                        <label for="enc-rsa-pk">RSA public key:</label>
+                        <input type="text" class="form-control" id="enc-rsa-pk" name="enc-rsa-pk" required>
+                    </div>
+                    <input type="submit" value="Encrypt" class="btn btn-primary">                
+                </form>            
+            </div>
         </div>
     </body>
 </html>

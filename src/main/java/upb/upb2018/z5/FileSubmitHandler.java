@@ -33,11 +33,14 @@ public class FileSubmitHandler extends HttpServlet {
         HttpSession session = request.getSession(false);
         //ziskanie login zo session
         String login = (String) session.getAttribute("login");
-        if (!request.getParameter("fileName").isEmpty() && !request.getParameter("share-with").isEmpty()) {
-            share(login, request.getParameter("fileName"), request.getParameter("share-with"));
-        } else if (!request.getParameter("fileNameComment").isEmpty() && !request.getParameter("comment").isEmpty()) {
-            addComment(login, request.getParameter("comment"), request.getParameter("fileNameComment"));
+        Result result = new Result(false, "Chyba");
+        if (request.getParameter("fileName") != null && request.getParameter("share-with") != null) {
+            result = share(login, request.getParameter("fileName"), request.getParameter("share-with"));
+        } else if (request.getParameter("fileNameComment") != null && request.getParameter("comment") != null) {
+            result = addComment(login, request.getParameter("comment"), request.getParameter("fileNameComment"));
         }
+        request.setAttribute("message", result.getMesssage());
+        request.getRequestDispatcher("/decrypt.jsp").forward(request, response);
     }
 
     private Result addComment(String login, String komentar, String fileName) {
@@ -45,7 +48,7 @@ public class FileSubmitHandler extends HttpServlet {
         try {
             Database db = new Database();
             Osoba autor = db.get(login);
-            result = db.addComment(fileName, komentar, autor); 
+            result = db.addComment(fileName, komentar, autor);
         } catch (Exception ex) {
             System.out.println(ex);
         }

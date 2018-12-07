@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -51,10 +52,10 @@ public class Osoba implements Serializable {
     @Column(name = "SALT")
     private long salt;
     
-    @OneToMany(mappedBy = "autor")
+    @OneToMany(mappedBy = "autor", orphanRemoval = true)
     private List<Subor> subory;
      
-    @ManyToMany(mappedBy = "zdielajuci")
+    @ManyToMany(mappedBy = "zdielajuci", cascade = CascadeType.REMOVE)
     private List<Subor> zdielaneSubory;
     
     @OneToMany(mappedBy = "autor")

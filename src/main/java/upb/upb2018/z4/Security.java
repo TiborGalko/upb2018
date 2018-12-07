@@ -28,8 +28,8 @@ import org.passay.dictionary.sort.ArraysSort;
 
 public class Security {
     
-    private static final String DICT_PATH = "usr/local/upb2018";
-
+    //private static final String DICT_PATH = "usr/local/upb2018";
+    private static final String DICT_PATH = "D:\\FEI\\ing\\1. rok\\UPB\\upb2018";
     private static String hash(String password) throws NoSuchAlgorithmException{  
         /*
         *   Pred samotnym hashovanim si najskor musite ulozit instanciu hashovacieho algoritmu.

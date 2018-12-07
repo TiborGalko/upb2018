@@ -20,6 +20,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import upb.upb2018.z4.Osoba;
 
 /**
@@ -51,14 +52,20 @@ public class Subor implements Serializable {
             joinColumns = @JoinColumn(name = "subor_fk"),
             inverseJoinColumns = @JoinColumn(name = "osoba_fk"))
     private List<Osoba> zdielajuci;
+    
+    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    private List<Komentar> komentare;
 
     public Subor() {
         zdielajuci = new ArrayList<>();
+        komentare = new ArrayList<>();
     }
 
     public Subor(String nazov, Osoba autor) {
         this.nazov = nazov;
-        this.autor = autor;
+        this.autor = autor; 
+        zdielajuci = new ArrayList<>();
+        komentare = new ArrayList<>();
     }
 
     public Long getId() {
@@ -93,13 +100,22 @@ public class Subor implements Serializable {
         this.zdielajuci = zdielajuci;
     }
 
+    public List<Komentar> getKomentare() {
+        return komentare;
+    }
+
+    public void setKomentare(List<Komentar> komentare) {
+        this.komentare = komentare;
+    }
+
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 67 * hash + Objects.hashCode(this.id);
-        hash = 67 * hash + Objects.hashCode(this.nazov);
-        hash = 67 * hash + Objects.hashCode(this.autor);
-        hash = 67 * hash + Objects.hashCode(this.zdielajuci);
+        int hash = 3;
+        hash = 53 * hash + Objects.hashCode(this.id);
+        hash = 53 * hash + Objects.hashCode(this.nazov);
+        hash = 53 * hash + Objects.hashCode(this.autor);
+        hash = 53 * hash + Objects.hashCode(this.zdielajuci);
+        hash = 53 * hash + Objects.hashCode(this.komentare);
         return hash;
     }
 
@@ -124,12 +140,19 @@ public class Subor implements Serializable {
         if (!Objects.equals(this.autor, other.autor)) {
             return false;
         }
-        return Objects.equals(this.zdielajuci, other.zdielajuci);
+        if (!Objects.equals(this.zdielajuci, other.zdielajuci)) {
+            return false;
+        }
+        if (!Objects.equals(this.komentare, other.komentare)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return "Subor{" + "id=" + id + ", nazov=" + nazov + ", autor=" + autor + ", zdielajuci=" + zdielajuci + '}';
+        return "Subor{" + "id=" + id + ", nazov=" + nazov + ", autor=" + autor + ", zdielajuci=" + zdielajuci + ", komentare=" + komentare + '}';
     }
+    
 
 }

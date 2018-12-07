@@ -6,17 +6,15 @@
 package upb.upb2018.z5;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import upb.upb2018.z4.*;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import java.util.List;
+import upb.upb2018.z4.Database.Result;
 
 /**
  *
@@ -42,18 +40,33 @@ public class FileTableHandler extends HttpServlet {
     // ajax vola tuto metodu zo share
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {   
-            String file = request.getParameter("filename");
+        String fileName = request.getParameter("fileName");
+        String deleteFileName = request.getParameter("deleteFile");
+        System.out.println("Filename " + fileName);
+        if (fileName != null) {
             Database db = new Database();
-            Subor s = db.getFile(file);
-            String json = "{'nazov': '"+s.getNazov()+"', 'autor': '"+s.getAutor().getLogin()+"'}";                     
-            System.out.println(json);
-        } catch (Exception ex) {
-            // System.err.println("Initial SessionFactory creation failed.");
-            ex.printStackTrace();
-            System.exit(0);
-        }
+            //TODO zranitelnost
+            List<String> list = db.getAllCommentsByFileName(fileName);
+            if (list.size() > 0) {
+                String json = new Gson().toJson(list);
 
+                response.setContentType("text/plain");
+                response.getWriter().write(json);
+            }
+        } else if (deleteFileName != null) {
+            Database db = new Database();
+            Result r = db.deleteFile(deleteFileName);
+            if (r.isResult()) {
+                HttpSession session = request.getSession(false);
+                String login = (String) session.getAttribute("login");
+                List<String> list = db.getAllfiles(login);
+                if (list.size() > 0) {
+                    String json = new Gson().toJson(list);
+                    response.setContentType("text/plain");
+                    response.getWriter().write(json);
+                }
+            }
+        }
     }
 
 }
