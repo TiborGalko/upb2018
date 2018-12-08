@@ -39,6 +39,7 @@ public class FileSubmitHandler extends HttpServlet {
         } else if (request.getParameter("fileNameComment") != null && request.getParameter("comment") != null) {
             result = addComment(login, request.getParameter("comment"), request.getParameter("fileNameComment"));
         }
+        System.out.println(result.getMesssage());
         request.setAttribute("message", result.getMesssage());
         request.getRequestDispatcher("/decrypt.jsp").forward(request, response);
     }
@@ -73,8 +74,8 @@ public class FileSubmitHandler extends HttpServlet {
             if (result.isResult() == false) {
                 return result;
             }
-            String newFileName = db.checkFileName(fileName);
-            result = db.addPrijemcaToFile(newFileName, prijemca);
+            //String newFileName = db.checkFileName(fileName);
+            result = db.addPrijemcaToFile(fileName, prijemca);
             if (result.isResult() == false) {
                 return result;
             }
