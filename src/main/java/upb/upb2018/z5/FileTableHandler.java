@@ -36,14 +36,12 @@ public class FileTableHandler extends HttpServlet {
         response.getWriter().write(json);
     }
 
-    // TODO volaco je tu strasne dojebane a nechce to chodit treba tu vytiahnut data pre ten subor ako json ale ani za nic
-    // ajax vola tuto metodu zo share
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String fileName = request.getParameter("fileName");
         String deleteFileName = request.getParameter("deleteFile");
         System.out.println("Filename " + fileName);
-        if (fileName != null) {
+        if (fileName != null) {            
             Database db = new Database();
             //TODO zranitelnost
             List<String> list = db.getAllCommentsByFileName(fileName);

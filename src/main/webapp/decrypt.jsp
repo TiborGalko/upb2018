@@ -35,16 +35,22 @@
                 opacity:1;
                 pointer-events: auto;
             }
-            .modalDialog > div {
-                width: 400px;
+            .modalDiv {
+                width: 60%;
                 position: relative;
                 margin: 10% auto;
-                padding: 5px 20px 13px 20px;
+                padding: 30px 20px 80px 20px;
                 border-radius: 10px;
-                background: #fff;
-                background: -moz-linear-gradient(#fff, #999);
-                background: -webkit-linear-gradient(#fff, #999);
-                background: -o-linear-gradient(#fff, #999);
+                background: #d3d2d1;
+                background: -moz-linear-gradient(#d3d2d1, #c6c6c4);
+                background: -webkit-linear-gradient(#d3d2d1, #c6c6c4);
+                background: -o-linear-gradient(#d3d2d1, #c6c6c4);                
+            }
+            .comment {                
+                background: white;
+                padding: 4px;
+                border: 1px dashed black;
+                margin-bottom: 10px;
             }
             .close {
                 background: #606061;
@@ -82,16 +88,17 @@
                 height: 80px;
                 width: 98%;
                 border-radius: 50px 25px
-            }
+            }            
             nav ul{
                 margin: 0 1%;
                 list-style-type: none;
             }
             nav ul li{
-                float: left;     
+                float: left;
+                padding: 0 1%;
                 margin: 0 5px;
                 font-size: 25px;
-                height: 50px;
+                height: 73px;
                 line-height: 3.2em;
             }
             a{
@@ -104,6 +111,9 @@
             td:hover {
                 background-color: lightgray;
             } 
+            form {
+                margin-bottom: 15px;
+            }
         </style>
     </head>
     <body>
@@ -159,7 +169,7 @@
                         var array = JSON.parse(result);
                         var option = '';
                         for (var i = 0; i < array.length; i++) {
-                            option += "<div> " + array[i] + "</div>";
+                            option += "<div class='comment'> " + array[i] + "</div>";
                         }
                         console.log(option);
                         $('#comments').html(option);
@@ -196,7 +206,7 @@
                 <tbody id="table1"></tbody>
             </table>
             <div id="openModal" class="modalDialog">
-                <div>
+                <div class="modalDiv">
                     <a href="#close" title="Close" class="close">X</a>
                     <h2>Sharing:</h2>
                     <div>
@@ -212,7 +222,7 @@
                 </div>
             </div>
             <div id="openComment" class="modalDialog">
-                <div>
+                <div class="modalDiv">
                     <a href="#close" title="Close" class="close">X</a>
                     <h2>Add a comment: </h2>                
                     <div>

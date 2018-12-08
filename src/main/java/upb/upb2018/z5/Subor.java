@@ -139,13 +139,7 @@ public class Subor implements Serializable {
         }
         if (!Objects.equals(this.autor, other.autor)) {
             return false;
-        }
-        if (!Objects.equals(this.zdielajuci, other.zdielajuci)) {
-            return false;
-        }
-        if (!Objects.equals(this.komentare, other.komentare)) {
-            return false;
-        }
+        }        
         return true;
     }
 

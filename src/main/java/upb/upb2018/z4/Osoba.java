@@ -164,14 +164,8 @@ public class Osoba implements Serializable {
         }
         if (!Objects.equals(this.id, other.id)) {
             return false;
-        }
-        if (!Objects.equals(this.subory, other.subory)) {
-            return false;
-        }
-        if (!Objects.equals(this.zdielaneSubory, other.zdielaneSubory)) {
-            return false;
-        }
-        return Objects.equals(this.komentare, other.komentare);
+        }        
+        return true;
     }
 
     @Override
