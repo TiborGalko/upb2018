@@ -39,6 +39,11 @@
         </style>
     </head>
     <body>
+        <%
+            final String message = (String) request.getAttribute("message");
+            if (message != null) {%> 
+        <script> alert("<%= message%>");</script> 
+        <% }%>
         <nav class="table_">
             <ul>
                 <li><a href="encrypt">Encrypt</a></li>
@@ -53,7 +58,7 @@
                 <h3>Choose file to encrypt</h3>
                 <form action="upload" method="post" enctype="multipart/form-data">
                     <div class="form-group">
-                        <input type="file" name="enc-file">
+                        <input type="file" name="enc-file" required>
                     </div>
                     <div class="form-group">
                         <label for="enc-rsa-pk">RSA public key:</label>

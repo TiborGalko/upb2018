@@ -7,15 +7,10 @@ package upb.upb2018.z3;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Base64;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -84,38 +79,33 @@ public class FileUploadHandler extends HttpServlet {
                 // TODO treba to osetrit
                 Result result;
 
-                System.out.println("mode " + mode);
                 if (mode == Mode.ENCRYPT) {
 
                     for (FileItem item : multiparts) {
                         if (!item.isFormField()) {
-                            System.out.println("errorenc " + error);
                             String name = new File(item.getName()).getName();
-
-                            System.out.println("Name " + name);
 
                             if (name.contains("/") || name.contains("\\")) {
                                 error = true;
                                 break;
                             }                           
 
-                            temp = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin() + File.separator + name + "-temp");
-                            System.out.println(temp.getAbsolutePath());
+                            temp = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin() + File.separator + name + "-temp");                            
                             Path p = FileSystems.getDefault().getPath(temp.getAbsolutePath());
                             if (!Files.exists(p)) {
                                 temp.getParentFile().mkdirs();
                             }
-                            item.write(temp); // zapisanie suboru do docasneho suboru
-                            encrypted = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin() + File.separator + name + ".enc");
-                            System.out.println("Enc encrypted " + encrypted.getName() + " temp " + temp.getName());
-                            filename = encrypted.getName();
+                            item.write(temp); // zapisanie suboru do docasneho suboru                            
                             
-                            String newFileName = db.checkFileName(filename);
-                            System.out.println("New file name" + newFileName + " old " + filename);
+                            String newFileName = db.checkFileName(name);                            
+                            encrypted = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin() + File.separator + newFileName + ".enc");
+                            //System.out.println("Enc encrypted " + encrypted.getName() + " temp " + temp.getName());
+                            filename = encrypted.getName();
+                                                        
                             // ulozenie zasifrovaneho suboru do databazy
 
                             result = db.saveFileToDB(autor, newFileName);                            
-                            System.out.println(result.getMesssage() + autor + newFileName);
+                            System.err.println(result.getMesssage());
                         } else {
                             if (item.getFieldName().equals("enc-rsa-pk")) {
                                 rsaPK = item.getString(); //nacitanie rsa public kluca z textfieldu stranky
@@ -128,8 +118,7 @@ public class FileUploadHandler extends HttpServlet {
                     }
                 } else {
                     for (FileItem item : multiparts) {
-                        if (!item.isFormField()) {
-                            System.out.println("errordec " + error);
+                        if (!item.isFormField()) {            
                             String name = new File(item.getName()).getName();
                             if (name.contains("/") || name.contains("\\")) {
                                 error = true;
@@ -141,7 +130,7 @@ public class FileUploadHandler extends HttpServlet {
 
                             decrypted = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin() + File.separator + name.substring(0, name.length() - 4));
 
-                            System.out.println("Enc decrypted " + decrypted.getName() + " temp " + temp.getName());
+                            //System.out.println("Enc decrypted " + decrypted.getName() + " temp " + temp.getName());
                             filename = decrypted.getName();
                         } else {
                             if (item.getFieldName().equals("dec-rsa-pk")) {
@@ -161,7 +150,7 @@ public class FileUploadHandler extends HttpServlet {
             }
             if (!error) {
                 File file = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin(), filename);
-                System.out.println("file upload " + file.getAbsolutePath());
+                
                 response.setHeader("Content-Type", getServletContext().getMimeType(filename));
                 response.setHeader("Content-Length", String.valueOf(file.length()));
                 response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");

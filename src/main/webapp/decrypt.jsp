@@ -117,6 +117,11 @@
         </style>
     </head>
     <body>
+        <%
+            final String message = (String) request.getAttribute("message");
+            if (message != null) {%> 
+        <script> alert("<%= message%>");</script> 
+        <% }%>
         <nav class="table_">
             <ul>
                 <li><a href="encrypt">Encrypt</a></li>
@@ -180,10 +185,10 @@
                     });
                 }
                 /*Vymaze subor a spravi update tabulky*/
-                function deleteFile(filename) {                    
+                function deleteFile(filename) {
                     $.post("filetable", $.param({"deleteFile": filename}), function (result) {
                         $("#table1 tr").remove();
-                        if (result) {                            
+                        if (result) {
                             var array = JSON.parse(result);
                             var option = '';
                             for (var i = 0; i < array.length; i++) {

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import upb.upb2018.z4.*;
 import com.google.gson.Gson;
+import java.io.File;
 import java.util.List;
 import upb.upb2018.z4.Database.Result;
 
@@ -21,6 +22,8 @@ import upb.upb2018.z4.Database.Result;
  * @author karol
  */
 public class FileTableHandler extends HttpServlet {
+
+    private final String UPLOAD_DIRECTORY = "C:\\Users\\h\\Documents\\upb2018";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -40,9 +43,8 @@ public class FileTableHandler extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String fileName = request.getParameter("fileName");
         String deleteFileName = request.getParameter("deleteFile");
-        System.out.println("Filename " + fileName);
-        System.out.println("DecFilename " + deleteFileName);
-        if (fileName != null) {            
+
+        if (fileName != null) {
             Database db = new Database();
             //TODO zranitelnost
             List<String> list = db.getAllCommentsByFileName(fileName);
@@ -58,8 +60,22 @@ public class FileTableHandler extends HttpServlet {
             if (r.isResult()) {
                 HttpSession session = request.getSession(false);
                 String login = (String) session.getAttribute("login");
-                List<String> list = db.getAllfiles(login);
-                System.out.println("New table size after delete" + list.size());
+
+                // Vymazanie na disku
+                
+                File s = new File(UPLOAD_DIRECTORY + File.separator + login + File.separator + deleteFileName + ".enc");
+                System.out.println(s.getAbsolutePath());
+                try {
+                    if (s.delete()) {
+                        System.out.println(s.getName() + " is deleted!");
+                    } else {
+                        System.out.println("Delete operation is failed.");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                
+                List<String> list = db.getAllfiles(login);                
                 if (list.size() > 0) {
                     String json = new Gson().toJson(list);
                     response.setContentType("text/plain");

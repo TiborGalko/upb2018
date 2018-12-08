@@ -257,23 +257,18 @@ public class Database {
         return list;
     }
 
-    public String checkFileName(String fileName) {
-        
-        if(getFile(fileName) == null) {
-            return fileName;
-        }
-            
-        String[] tokens = fileName.split("\\."); // rozdeli cez bodky
-        String newName = tokens[0]; // zobere nazov
+    public String checkFileName(String fileName) {                           
+        String[] tokens;
+        String newName = fileName; // zobere nazov
         StringBuilder builder = new StringBuilder();
 
         int i = 1;
         while (getFile(newName) != null) {
+            tokens = newName.split("\\."); // rozdeli cez bodky
             if (i > 1) {
-                newName = newName.substring(0, newName.length() - 4); // odstrani cislovanie ak bolo pridane
+                tokens[0] = tokens[0].substring(0, tokens[0].length() - 4); // odstrani cislovanie ak bolo pridane
             }
-            newName += "(" + i + ")";
-            tokens[0] = newName;
+            tokens[0] += " (" + i + ")";
 
             for (int j = 0; j < tokens.length; j++) {
                 builder.append(tokens[j]); // vytvori novy string
@@ -282,6 +277,7 @@ public class Database {
                 }
             }
             newName = builder.toString();
+            builder.setLength(0); // vymazanie buildera
             i++;
         }
         return newName;
