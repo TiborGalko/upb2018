@@ -86,12 +86,4 @@
         <auth-constraint>
         </auth-constraint>
     </security-constraint>
-    <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>Share hidden page</web-resource-name>
-            <url-pattern>/share.jsp</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-        </auth-constraint>
-    </security-constraint>
 </web-app>

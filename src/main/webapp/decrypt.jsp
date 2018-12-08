@@ -38,7 +38,7 @@
             .modalDiv {
                 width: 60%;
                 position: relative;
-                margin: 10% auto;
+                margin: 3% auto;
                 padding: 30px 20px 80px 20px;
                 border-radius: 10px;
                 background: #d3d2d1;
@@ -144,6 +144,46 @@
                 console.log("script");
                 $(document).ready(function () {
                     $.ajax({url: "filetable", success: function (result) {
+                            if (result) {
+                                var array = JSON.parse(result);
+                                var option = '';
+                                for (var i = 0; i < array.length; i++) {
+                                    option += '<tr>' +
+                                            '<td onclick="openDetailsModal(\'' + array[i] + '\')"><a href="#openModal">' + array[i] + '</a></td>' +
+                                            '<td onclick="openCommentsModal(\'' + array[i] + '\')"><a href="#openComment">Comment</a></td>' +
+                                            '<td onclick="decryptModalFilename(\'' + array[i] + '\')"><a href="#decryptModal">Decrypt and download</a></td>' +
+                                            '<td onclick="deleteFile(\'' + array[i] + '\')">Delete</td>' +
+                                            '</tr>';
+                                }
+
+                                $('#table1').append(option);
+                            }
+                        }, error: function (error) {
+                            console.log(error);
+                        }});
+                });
+                function openDetailsModal(field) {
+                    $("#fileName").val(field);
+                }
+                function openCommentsModal(field) {
+                    $("#fileNameComment").val(field);
+                    $.post("filetable", $.param({"fileName": field}), function (result) {
+                        if (result) {
+                            var array = JSON.parse(result);
+                            var option = '';
+                            for (var i = 0; i < array.length; i++) {
+                                option += "<div class='comment'> " + array[i] + "</div>";
+                            }
+                            console.log(option);
+                            $('#comments').html(option);
+                        }
+                    });
+                }
+                /*Vymaze subor a spravi update tabulky*/
+                function deleteFile(filename) {                    
+                    $.post("filetable", $.param({"deleteFile": filename}), function (result) {
+                        $("#table1 tr").remove();
+                        if (result) {                            
                             var array = JSON.parse(result);
                             var option = '';
                             for (var i = 0; i < array.length; i++) {
@@ -156,42 +196,12 @@
                             }
 
                             $('#table1').append(option);
-                        }, error: function (error) {
-                            console.log(error);
-                        }});
-                });
-                function openDetailsModal(field) {
-                    $("#fileName").val(field);
-                }
-                function openCommentsModal(field) {
-                    $("#fileNameComment").val(field);
-                    $.post("filetable", $.param({"fileName": field}), function (result) {
-                        var array = JSON.parse(result);
-                        var option = '';
-                        for (var i = 0; i < array.length; i++) {
-                            option += "<div class='comment'> " + array[i] + "</div>";
+                            console.log(option);
                         }
-                        console.log(option);
-                        $('#comments').html(option);
                     });
                 }
-                /*Vymaze subor a spravi update tabulky*/
-                function deleteFile(filename) {
-                    $.post("filetable", $.param({"deleteFile": filename}), function (result) {
-                        var array = JSON.parse(result);
-                        var option = '';
-                        for (var i = 0; i < array.length; i++) {
-                            option += '<tr>' +
-                                    '<td onclick="openDetailsModal(\'' + array[i] + '\')"><a href="#openModal">' + array[i] + '</a></td>' +
-                                    '<td onclick="openCommentsModal(\'' + array[i] + '\')"><a href="#openComment">Comment</a></td>' +
-                                    '<td>Decrypt and download</td>' +
-                                    '<td onclick="deleteFile(\'' + array[i] + '\')">Delete</td>' +
-                                    '</tr>';
-                        }
-
-                        $('#table1').append(option);
-                        console.log(option);
-                    });
+                function decryptModalFilename(filename) {
+                    $("#dec-filename").val(filename);
                 }
             </script>
             <table class="table">
@@ -237,6 +247,25 @@
                     <div>
                         <h2>Comments:</h2>
                         <div id="comments"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="decryptModal" class="modalDialog">
+                <div class="modalDiv">
+                    <a href="#close" title="Close" class="close">X</a>
+                    <h2>Decrypt file:</h2>
+                    <div>
+                        <form action="upload" method="post">
+                            <div class="form-group">
+                                <label for="dec-filename">File: </label>
+                                <input type="text" id="dec-filename" name="dec-filename" value="#">
+                            </div>
+                            <div class="form-group">
+                                <label for="dec-rsa-pk-file">RSA private key:</label>
+                                <input type="text" class="form-control" id="dec-rsa-pk-file" name="dec-rsa-pk-file" required>
+                            </div>
+                            <input type="submit" value="Decrypt" class="btn btn-primary btn-lg">                
+                        </form>                        
                     </div>
                 </div>
             </div>

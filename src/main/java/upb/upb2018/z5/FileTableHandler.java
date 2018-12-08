@@ -41,6 +41,7 @@ public class FileTableHandler extends HttpServlet {
         String fileName = request.getParameter("fileName");
         String deleteFileName = request.getParameter("deleteFile");
         System.out.println("Filename " + fileName);
+        System.out.println("DecFilename " + deleteFileName);
         if (fileName != null) {            
             Database db = new Database();
             //TODO zranitelnost
@@ -58,6 +59,7 @@ public class FileTableHandler extends HttpServlet {
                 HttpSession session = request.getSession(false);
                 String login = (String) session.getAttribute("login");
                 List<String> list = db.getAllfiles(login);
+                System.out.println("New table size after delete" + list.size());
                 if (list.size() > 0) {
                     String json = new Gson().toJson(list);
                     response.setContentType("text/plain");

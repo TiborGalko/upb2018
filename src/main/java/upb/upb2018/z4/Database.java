@@ -170,15 +170,17 @@ public class Database {
         if (filename == null) {
             return new Result(false, "Zle zadane argumenty"); //osetrenie aby sa nezapisovali blbosti do db
         }
-        Subor subor = getFile(filename);
-        if (subor == null) {
-            return new Result(false, "Chyba"); //osetrenie aby sa nezapisovali blbosti do db
-        }
         try {
             em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.remove(subor);
-            em.getTransaction().commit();            
+            TypedQuery<Subor> q = em.createNamedQuery("Subor.findByNazov", Subor.class);
+            q.setParameter("nazov", filename);
+            Subor s;
+            if (q.getResultList().size() > 0) {
+                s = q.getResultList().get(0);
+                em.getTransaction().begin();
+                em.remove(s);
+                em.getTransaction().commit();
+            }
         } catch (Exception e) {
             System.err.println("Pri nacitani suborov z databazy nastala chyba " + e.getLocalizedMessage());
             em.getTransaction().rollback();
@@ -256,6 +258,11 @@ public class Database {
     }
 
     public String checkFileName(String fileName) {
+        
+        if(getFile(fileName) == null) {
+            return fileName;
+        }
+            
         String[] tokens = fileName.split("\\."); // rozdeli cez bodky
         String newName = tokens[0]; // zobere nazov
         StringBuilder builder = new StringBuilder();
@@ -265,11 +272,14 @@ public class Database {
             if (i > 1) {
                 newName = newName.substring(0, newName.length() - 4); // odstrani cislovanie ak bolo pridane
             }
-            newName += " (" + i + ")";
+            newName += "(" + i + ")";
             tokens[0] = newName;
 
-            for (String s : tokens) {
-                builder.append(s); // vytvori novy string
+            for (int j = 0; j < tokens.length; j++) {
+                builder.append(tokens[j]); // vytvori novy string
+                if(j < tokens.length - 1) {
+                    builder.append(".");
+                }
             }
             newName = builder.toString();
             i++;

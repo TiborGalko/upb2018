@@ -135,9 +135,6 @@ public class Osoba implements Serializable {
         hash = 11 * hash + Objects.hashCode(this.login);
         hash = 11 * hash + Objects.hashCode(this.password);
         hash = 11 * hash + (int) (this.salt ^ (this.salt >>> 32));
-        hash = 11 * hash + Objects.hashCode(this.subory);
-        hash = 11 * hash + Objects.hashCode(this.zdielaneSubory);
-        hash = 11 * hash + Objects.hashCode(this.komentare);
         return hash;
     }
 

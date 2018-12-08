@@ -114,8 +114,6 @@ public class Subor implements Serializable {
         hash = 53 * hash + Objects.hashCode(this.id);
         hash = 53 * hash + Objects.hashCode(this.nazov);
         hash = 53 * hash + Objects.hashCode(this.autor);
-        hash = 53 * hash + Objects.hashCode(this.zdielajuci);
-        hash = 53 * hash + Objects.hashCode(this.komentare);
         return hash;
     }
 
