@@ -115,6 +115,7 @@ public class Database {
         } else {
             out = null;
         }
+        System.out.println("Ziskava sa subor " + meno + " vysledok " + out);
         entityManager.close();
         return out;
     }
@@ -238,15 +239,14 @@ public class Database {
     public List<String> getAllCommentsByFileName(String fileName) {
         List<String> list = new ArrayList<>();
         EntityManager entityManager;
-        entityManager = emf.createEntityManager();
-        System.out.println("EM IS : " + entityManager.isOpen());
+        entityManager = emf.createEntityManager();       
 
         Subor s = getFile(fileName);
 
         if (s != null) {
             TypedQuery<Komentar> q = entityManager.createNamedQuery("Komentar.findAll", Komentar.class);
             if (q.getResultList().size() > 0) {
-                for (Komentar k : q.getResultList()) {
+                for (Komentar k : q.getResultList()) {                    
                     if (k.getParent().equals(s)) {
                         list.add(k.getObsah());
                     }

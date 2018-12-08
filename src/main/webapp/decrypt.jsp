@@ -258,7 +258,7 @@
                         <form action="upload" method="post">
                             <div class="form-group">
                                 <label for="dec-filename">File: </label>
-                                <input type="text" id="dec-filename" name="dec-filename" value="#">
+                                <input type="text" id="dec-filename" name="dec-filename" value="#" readonly>
                             </div>
                             <div class="form-group">
                                 <label for="dec-rsa-pk-file">RSA private key:</label>

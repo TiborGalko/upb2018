@@ -97,12 +97,9 @@ public class FileUploadHandler extends HttpServlet {
                             if (name.contains("/") || name.contains("\\")) {
                                 error = true;
                                 break;
-                            }
+                            }                           
 
-                            String newFileName = db.checkFileName(filename);
-                            // ulozenie zasifrovaneho suboru do databazy
-
-                            temp = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin() + File.separator + name);
+                            temp = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin() + File.separator + name + "-temp");
                             System.out.println(temp.getAbsolutePath());
                             Path p = FileSystems.getDefault().getPath(temp.getAbsolutePath());
                             if (!Files.exists(p)) {
@@ -112,8 +109,13 @@ public class FileUploadHandler extends HttpServlet {
                             encrypted = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin() + File.separator + name + ".enc");
                             System.out.println("Enc encrypted " + encrypted.getName() + " temp " + temp.getName());
                             filename = encrypted.getName();
+                            
+                            String newFileName = db.checkFileName(filename);
+                            System.out.println("New file name" + newFileName + " old " + filename);
+                            // ulozenie zasifrovaneho suboru do databazy
 
-                            db.saveFileToDB(autor, newFileName);
+                            result = db.saveFileToDB(autor, newFileName);                            
+                            System.out.println(result.getMesssage() + autor + newFileName);
                         } else {
                             if (item.getFieldName().equals("enc-rsa-pk")) {
                                 rsaPK = item.getString(); //nacitanie rsa public kluca z textfieldu stranky
@@ -134,7 +136,7 @@ public class FileUploadHandler extends HttpServlet {
                                 break;
                             }
 
-                            temp = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin() + File.separator + name);
+                            temp = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin() + File.separator + name + "-temp");
                             item.write(temp);
 
                             decrypted = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin() + File.separator + name.substring(0, name.length() - 4));
