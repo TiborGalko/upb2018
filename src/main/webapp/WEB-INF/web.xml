@@ -28,6 +28,14 @@
         <servlet-name>FileTableHandler</servlet-name>
         <servlet-class>upb.upb2018.z5.FileTableHandler</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FileSearchHandler</servlet-name>
+        <servlet-class>upb.upb2018.z5.FileSearchHandler</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FileSearchHandler</servlet-name>
+        <url-pattern>/search</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>FileUploadHandler</servlet-name>
         <url-pattern>/upload</url-pattern>
@@ -47,10 +55,6 @@
     <servlet-mapping>
         <servlet-name>Access</servlet-name>
         <url-pattern>/decrypt</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Access</servlet-name>
-        <url-pattern>/share</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Logout</servlet-name>

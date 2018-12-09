@@ -208,6 +208,29 @@
                 function decryptModalFilename(filename) {
                     $("#dec-filename").val(filename);
                 }
+                function search() {
+                    console.log("search funkcia");
+                    var vyraz = document.getElementById("searchvyraz").value;
+                    console.log(vyraz);
+                    $("#table1 tr").remove();
+                    $.post("search", $.param({"search": vyraz}), function (result) {
+                        if (result) {
+                            console.log("ak mam result");
+                            var array = JSON.parse(result);
+                            var option = '';
+                            for (var i = 0; i < array.length; i++) {
+                                option += '<tr>' +
+                                        '<td onclick="openDetailsModal(\'' + array[i] + '\')"><a href="#openModal">' + array[i] + '</a></td>' +
+                                        '<td onclick="openCommentsModal(\'' + array[i] + '\')"><a href="#openComment">Comment</a></td>' +
+                                        '<td onclick="decryptModalFilename(\'' + array[i] + '\')"><a href="#decryptModal">Decrypt and download</a></td>' +
+                                        '<td onclick="deleteFile(\'' + array[i] + '\')">Delete</td>' +
+                                        '</tr>';
+                            }
+                            $('#table1').append(option);
+                        }
+                    });
+                    console.log("koniec search");
+                }
             </script>
             <table class="table">
                 <thead>
@@ -215,7 +238,7 @@
                         <th>Name of document</th>
                         <th></th>
                         <th></th>
-                        <th></th>
+                        <th><a>Hľadaj:</a><input type="text" name="searchvyraz" id="searchvyraz"> <input type="button" onclick="search()" value="Submit" class="btn btn-primary"></th>
                     </tr>
                 </thead>   
                 <tbody id="table1"></tbody>

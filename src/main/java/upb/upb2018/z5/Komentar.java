@@ -29,6 +29,7 @@ import upb.upb2018.z4.Osoba;
 @NamedQueries({
     @NamedQuery(name = "Komentar.findAll", query = "SELECT k FROM Komentar k")
     , @NamedQuery(name = "Komentar.findById", query = "SELECT k FROM Komentar k WHERE k.id = :id")
+    , @NamedQuery(name = "Komentar.findByObsah", query = "SELECT k FROM Komentar k WHERE k.obsah LIKE :pattern")
     , @NamedQuery(name = "Komentar.findByAutor", query = "SELECT k FROM Komentar k WHERE k.autor = :autor")})
 public class Komentar implements Serializable {
 
@@ -36,18 +37,18 @@ public class Komentar implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
-    private Long id;  
-    
+    private Long id;
+
     @Column(name = "DATUM")
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date datum;
-    
+
     @Column(name = "OBSAH")
-    private String obsah;    
-        
+    private String obsah;
+
     @ManyToOne()
     private Osoba autor;
-    
+
     @ManyToOne()
     private Subor parent;
 
@@ -89,7 +90,7 @@ public class Komentar implements Serializable {
 
     public void setParent(Subor parent) {
         this.parent = parent;
-    }        
+    }
 
     @Override
     public int hashCode() {

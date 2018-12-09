@@ -31,6 +31,7 @@ import upb.upb2018.z4.Osoba;
 @NamedQueries({
     @NamedQuery(name = "Subor.findAll", query = "SELECT s FROM Subor s")
     , @NamedQuery(name = "Subor.findById", query = "SELECT s FROM Subor s WHERE s.id = :id")
+    , @NamedQuery(name = "Subor.findByLike", query = "SELECT s FROM Subor s WHERE s.nazov LIKE :pattern")
     , @NamedQuery(name = "Subor.findByAutorLogin", query = "SELECT s FROM Subor s WHERE s.autor.login = :login")
     , @NamedQuery(name = "Subor.findByNazov", query = "SELECT s FROM Subor s WHERE s.nazov = :nazov")})
 public class Subor implements Serializable {
@@ -52,7 +53,7 @@ public class Subor implements Serializable {
             joinColumns = @JoinColumn(name = "subor_fk"),
             inverseJoinColumns = @JoinColumn(name = "osoba_fk"))
     private List<Osoba> zdielajuci;
-    
+
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
     private List<Komentar> komentare;
 
@@ -63,7 +64,7 @@ public class Subor implements Serializable {
 
     public Subor(String nazov, Osoba autor) {
         this.nazov = nazov;
-        this.autor = autor; 
+        this.autor = autor;
         zdielajuci = new ArrayList<>();
         komentare = new ArrayList<>();
     }
@@ -137,7 +138,7 @@ public class Subor implements Serializable {
         }
         if (!Objects.equals(this.autor, other.autor)) {
             return false;
-        }        
+        }
         return true;
     }
 
@@ -145,6 +146,5 @@ public class Subor implements Serializable {
     public String toString() {
         return "Subor{" + "id=" + id + ", nazov=" + nazov + ", autor=" + autor + ", zdielajuci=" + zdielajuci + ", komentare=" + komentare + '}';
     }
-    
 
 }

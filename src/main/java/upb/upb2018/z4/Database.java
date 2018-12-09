@@ -239,14 +239,14 @@ public class Database {
     public List<String> getAllCommentsByFileName(String fileName) {
         List<String> list = new ArrayList<>();
         EntityManager entityManager;
-        entityManager = emf.createEntityManager();       
+        entityManager = emf.createEntityManager();
 
         Subor s = getFile(fileName);
 
         if (s != null) {
             TypedQuery<Komentar> q = entityManager.createNamedQuery("Komentar.findAll", Komentar.class);
             if (q.getResultList().size() > 0) {
-                for (Komentar k : q.getResultList()) {                    
+                for (Komentar k : q.getResultList()) {
                     if (k.getParent().equals(s)) {
                         list.add(k.getObsah());
                     }
@@ -257,7 +257,57 @@ public class Database {
         return list;
     }
 
-    public String checkFileName(String fileName) {                           
+    /**
+     * Search funkcia
+     *
+     * @param login username
+     * @param search vyraz
+     * @return List nazvov suborov
+     */
+    public List<String> getSearch(String login, String search) {
+        List<String> ret = new ArrayList();
+        EntityManager entityManager;
+        entityManager = emf.createEntityManager();
+        // komentar obsahujuci hladany vyraz
+        TypedQuery<Komentar> q = entityManager.createNamedQuery("Komentar.findByObsah", Komentar.class);
+        q.setParameter("pattern", '%' + search + '%');
+        if (q.getResultList().size() > 0) {
+            for (Komentar k : q.getResultList()) {
+                if (k.getParent().getAutor().getLogin().equals(login)) {
+                    ret.add(k.getParent().getNazov());
+                } else {
+                    List<Osoba> osoby = k.getParent().getZdielajuci();
+                    for (Osoba o : osoby) {
+                        if (o.getLogin().equals(login)) {
+                            ret.add(k.getParent().getNazov());
+                        }
+                    }
+
+                }
+            }
+        }
+        // Prida aj subory ktore maju v nazve hladany vyraz
+        TypedQuery<Subor> q1 = entityManager.createNamedQuery("Subor.findByLike", Subor.class);
+        q1.setParameter("pattern", '%' + search + '%');
+        if (q1.getResultList().size() > 0) {
+            for (Subor s : q1.getResultList()) {
+                if (s.getAutor().getLogin().equals(login)) {
+                    ret.add(s.getNazov());
+                } else {
+                    List<Osoba> o = s.getZdielajuci();
+                    for (Osoba os : o) {
+                        if (os.getLogin().equals(login)) {
+                            ret.add(s.getNazov());
+                        }
+                    }
+                }
+            }
+        }
+        entityManager.close();
+        return ret;
+    }
+
+    public String checkFileName(String fileName) {
         String[] tokens;
         String newName = fileName; // zobere nazov
         StringBuilder builder = new StringBuilder();
@@ -272,7 +322,7 @@ public class Database {
 
             for (int j = 0; j < tokens.length; j++) {
                 builder.append(tokens[j]); // vytvori novy string
-                if(j < tokens.length - 1) {
+                if (j < tokens.length - 1) {
                     builder.append(".");
                 }
             }
