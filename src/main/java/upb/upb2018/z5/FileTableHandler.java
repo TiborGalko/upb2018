@@ -23,7 +23,7 @@ import upb.upb2018.z4.Database.Result;
  */
 public class FileTableHandler extends HttpServlet {
 
-    private final String UPLOAD_DIRECTORY = "C:\\Users\\karol\\Desktop\\karci";
+    private final String UPLOAD_DIRECTORY = "/usr/local/upb2018";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -62,7 +62,6 @@ public class FileTableHandler extends HttpServlet {
                 String login = (String) session.getAttribute("login");
 
                 // Vymazanie na disku
-                
                 File s = new File(UPLOAD_DIRECTORY + File.separator + login + File.separator + deleteFileName + ".enc");
                 System.out.println(s.getAbsolutePath());
                 try {
@@ -74,8 +73,8 @@ public class FileTableHandler extends HttpServlet {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                
-                List<String> list = db.getAllfiles(login);                
+
+                List<String> list = db.getAllfiles(login);
                 if (list.size() > 0) {
                     String json = new Gson().toJson(list);
                     response.setContentType("text/plain");

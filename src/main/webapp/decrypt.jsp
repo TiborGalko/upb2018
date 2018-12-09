@@ -208,15 +208,11 @@
                 function decryptModalFilename(filename) {
                     $("#dec-filename").val(filename);
                 }
-                function search() {
-                    console.log("search funkcia");
-                    var vyraz = document.getElementById("searchvyraz").value;
-                    vyraz.escapeHTML();
-                    console.log(vyraz);
+                function search() {                    
+                    var vyraz = document.getElementById("searchvyraz").value;                                        
                     $("#table1 tr").remove();
                     $.post("search", $.param({"search": vyraz}), function (result) {
-                        if (result) {
-                            console.log("ak mam result");
+                        if (result) {                            
                             var array = JSON.parse(result);
                             var option = '';
                             for (var i = 0; i < array.length; i++) {
@@ -229,8 +225,7 @@
                             }
                             $('#table1').append(option);
                         }
-                    });
-                    console.log("koniec search");
+                    });                    
                 }
             </script>
             <table class="table">

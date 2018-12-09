@@ -35,8 +35,7 @@ import upb.upb2018.z5.Subor;
  */
 public class FileUploadHandler extends HttpServlet {
 
-    //private final String UPLOAD_DIRECTORY = "/usr/local/upb2018";
-    private final String UPLOAD_DIRECTORY = "C:\\Users\\h\\Documents\\upb2018";
+    private final String UPLOAD_DIRECTORY = "/usr/local/upb2018";
 
     private enum Mode {
         ENCRYPT,
@@ -75,8 +74,7 @@ public class FileUploadHandler extends HttpServlet {
 
                 String rsaPK = null;
 
-                //ci vsetky testy presli a sprava ktora sa vypise v pripade chyby    
-                // TODO treba to osetrit
+                //ci vsetky testy presli a sprava ktora sa vypise v pripade chyby                    
                 Result result;
 
                 if (mode == Mode.ENCRYPT) {
