@@ -38,6 +38,14 @@
                     <label for="password">Heslo:</label>
                     <input type="password" class="form-control" id="password" name="password" required>
                 </div>
+                <div class="form-group">
+                    <label for="reg-pub-key">Verejný RSA kľúč</label>
+                    <input type="text" class="form-control" id="reg-pub-key" name="reg-pub-key" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-priv-key">Privátny RSA kľúč</label>
+                    <input type="text" class="form-control" id="reg-priv-key" name="reg-priv-key" required>
+                </div>
                 <input type="submit" value="Registrovať sa" class="btn btn-primary">                
             </form>            
         </div>

@@ -22,9 +22,11 @@ public class Registration extends HttpServlet {
             throws ServletException, IOException {
         String login = escapeHtml(request.getParameter("login"));
         String password = escapeHtml(request.getParameter("password"));
-        if (login != null && !"".equals(login) && password != null && !"".equals(password)) {
+        String pubkey = escapeHtml(request.getParameter("reg-pub-key"));
+        String privkey = escapeHtml(request.getParameter("reg-priv-key"));
+        if (login != null && !"".equals(login) && password != null && !"".equals(password) && pubkey != null && !"".equals(pubkey) && privkey != null && !"".equals(privkey)) {
             try {
-                Result result = registracia(login, password);               
+                Result result = registracia(login, password, pubkey, privkey);               
                 if (result.isResult()) {
                     //vytvorenie session
                     //request.getSession(true);
@@ -40,7 +42,7 @@ public class Registration extends HttpServlet {
         }
     }
 
-    protected static Result registracia(String meno, String heslo) throws NoSuchAlgorithmException, IOException {
+    protected static Result registracia(String meno, String heslo, String pubkey, String privkey) throws NoSuchAlgorithmException, IOException {
         if (!Security.checkParamsOfPassword(heslo)) {
             return new Result(false, "Heslo nesplna bezpecnostnu politiku - nedostatocna komplexita");
         } else if (!Security.checkDict(heslo)) {
@@ -50,7 +52,7 @@ public class Registration extends HttpServlet {
         Database db = new Database();
         long salt = Security.getSalt(Long.MIN_VALUE, 50);
         String hashedSaltedPass = Security.mixPasswordAndSaltAndHash(heslo, salt);
-        Osoba user = new Osoba(meno, hashedSaltedPass, salt);
+        Osoba user = new Osoba(meno, hashedSaltedPass, salt, pubkey, privkey);
         Result r = db.add(user);
         if (r.isResult()) {
             return new Result(true, "Uzivatel uspesne vytvoreny");

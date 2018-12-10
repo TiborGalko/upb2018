@@ -124,8 +124,8 @@
         <% }%>
         <nav class="table_">
             <ul>
-                <li><a href="encrypt">Encrypt</a></li>
-                <li><a href="decrypt">Decrypt</a></li>        
+                <li><a href="encrypt">Share</a></li>
+                <li><a href="decrypt">Download</a></li>        
                 <div id="logout">
                     <li><a href="logout">Log out</a></li>
                 </div>
@@ -137,11 +137,7 @@
                 <form action="upload" method="post" enctype="multipart/form-data">
                     <div class="form-group">
                         <input type="file" name="dec-file" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="dec-rsa-pk">RSA private key:</label>
-                        <input type="text" class="form-control" id="dec-rsa-pk" name="dec-rsa-pk" required>
-                    </div>
+                    </div>                    
                     <input type="submit" value="Decrypt" class="btn btn-primary">                
                 </form>            
             </div>           
@@ -154,11 +150,11 @@
                                 var option = '';
                                 for (var i = 0; i < array.length; i++) {
                                     option += '<tr>' +
-                                            '<td onclick="openDetailsModal(\'' + array[i] + '\')"><a href="#openModal">' + array[i] + '</a></td>' +
-                                            '<td onclick="openCommentsModal(\'' + array[i] + '\')"><a href="#openComment">Comment</a></td>' +
-                                            '<td onclick="decryptModalFilename(\'' + array[i] + '\')"><a href="#decryptModal">Decrypt and download</a></td>' +
-                                            '<td onclick="deleteFile(\'' + array[i] + '\')">Delete</td>' +
-                                            '</tr>';
+                                        '<td onclick="openDetailsModal(\'' + array[i] + '\')">' + array[i] + '</td>' +
+                                        '<td onclick="openCommentsModal(\'' + array[i] + '\')"><a href="#openComment">Comment</a></td>' +
+                                        '<td onclick="decryptModalFilename(\'' + array[i] + '\')">Decrypt and download</td>' +
+                                        '<td onclick="deleteFile(\'' + array[i] + '\')">Delete</td>' +
+                                        '</tr>';
                                 }
 
                                 $('#table1').append(option);
@@ -193,9 +189,9 @@
                             var option = '';
                             for (var i = 0; i < array.length; i++) {
                                 option += '<tr>' +
-                                        '<td onclick="openDetailsModal(\'' + array[i] + '\')"><a href="#openModal">' + array[i] + '</a></td>' +
+                                        '<td onclick="openDetailsModal(\'' + array[i] + '\')">' + array[i] + '</td>' +
                                         '<td onclick="openCommentsModal(\'' + array[i] + '\')"><a href="#openComment">Comment</a></td>' +
-                                        '<td>Decrypt and download</td>' +
+                                        '<td onclick="decryptModalFilename(\'' + array[i] + '\')">Decrypt and download</td>' +
                                         '<td onclick="deleteFile(\'' + array[i] + '\')">Delete</td>' +
                                         '</tr>';
                             }
@@ -207,25 +203,26 @@
                 }
                 function decryptModalFilename(filename) {
                     $("#dec-filename").val(filename);
+                    document.getElementById("decrypt-form").submit();
                 }
-                function search() {                    
-                    var vyraz = document.getElementById("searchvyraz").value;                                        
+                function search() {
+                    var vyraz = document.getElementById("searchvyraz").value;
                     $("#table1 tr").remove();
                     $.post("search", $.param({"search": vyraz}), function (result) {
-                        if (result) {                            
+                        if (result) {
                             var array = JSON.parse(result);
                             var option = '';
                             for (var i = 0; i < array.length; i++) {
-                                option += '<tr>' +
-                                        '<td onclick="openDetailsModal(\'' + array[i] + '\')"><a href="#openModal">' + array[i] + '</a></td>' +
+                               option += '<tr>' +
+                                        '<td onclick="openDetailsModal(\'' + array[i] + '\')">' + array[i] + '</td>' +
                                         '<td onclick="openCommentsModal(\'' + array[i] + '\')"><a href="#openComment">Comment</a></td>' +
-                                        '<td onclick="decryptModalFilename(\'' + array[i] + '\')"><a href="#decryptModal">Decrypt and download</a></td>' +
+                                        '<td onclick="decryptModalFilename(\'' + array[i] + '\')">Decrypt and download</td>' +
                                         '<td onclick="deleteFile(\'' + array[i] + '\')">Delete</td>' +
                                         '</tr>';
                             }
                             $('#table1').append(option);
                         }
-                    });                    
+                    });
                 }
             </script>
             <table class="table">
@@ -238,23 +235,7 @@
                     </tr>
                 </thead>   
                 <tbody id="table1"></tbody>
-            </table>
-            <div id="openModal" class="modalDialog">
-                <div class="modalDiv">
-                    <a href="#close" title="Close" class="close">X</a>
-                    <h2>Sharing:</h2>
-                    <div>
-                        <form action="submitfile" method="post">
-                            <input type="hidden" id="fileName" name="fileName" value="#">
-                            <div class="form-group">
-                                <label for="sel1">Share with: </label>
-                                <input type="text" name="share-with" required>
-                            </div>
-                            <input type="submit" value="Submit" class="btn btn-primary btn-lg">                
-                        </form> 
-                    </div>
-                </div>
-            </div>
+            </table>            
             <div id="openComment" class="modalDialog">
                 <div class="modalDiv">
                     <a href="#close" title="Close" class="close">X</a>
@@ -275,23 +256,12 @@
                 </div>
             </div>
             <div id="decryptModal" class="modalDialog">
-                <div class="modalDiv">
-                    <a href="#close" title="Close" class="close">X</a>
-                    <h2>Decrypt file:</h2>
-                    <div>
-                        <form action="upload" method="post">
-                            <div class="form-group">
-                                <label for="dec-filename">File: </label>
-                                <input type="text" id="dec-filename" name="dec-filename" value="#" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="dec-rsa-pk-file">RSA private key:</label>
-                                <input type="text" class="form-control" id="dec-rsa-pk-file" name="dec-rsa-pk-file" required>
-                            </div>
-                            <input type="submit" value="Decrypt" class="btn btn-primary btn-lg">                
-                        </form>                        
-                    </div>
-                </div>
+                <form action="upload" method="post" id="decrypt-form">
+                    <div class="form-group">
+                        <label for="dec-filename">File: </label>
+                        <input type="text" id="dec-filename" name="dec-filename" value="#" readonly>
+                    </div>                                                             
+                </form> 
             </div>
         </div>
     </body>

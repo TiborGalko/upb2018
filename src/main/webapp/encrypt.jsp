@@ -46,8 +46,8 @@
         <% }%>
         <nav class="table_">
             <ul>
-                <li><a href="encrypt">Encrypt</a></li>
-                <li><a href="decrypt">Decrypt</a></li>        
+                <li><a href="encrypt">Share</a></li>
+                <li><a href="decrypt">Download</a></li>        
                 <div id="logout">
                     <li><a href="logout">Log out</a></li>
                 </div>
@@ -55,14 +55,14 @@
         </nav> 
         <div class="container">          
             <div>
-                <h3>Choose file to encrypt</h3>
+                <h3>Choose file to share</h3>
                 <form action="upload" method="post" enctype="multipart/form-data">
                     <div class="form-group">
                         <input type="file" name="enc-file" required>
                     </div>
                     <div class="form-group">
-                        <label for="enc-rsa-pk">RSA public key:</label>
-                        <input type="text" class="form-control" id="enc-rsa-pk" name="enc-rsa-pk" required>
+                        <label for="enc-recipient">Recipient:</label>
+                        <input type="text" class="form-control" id="enc-recipient" name="enc-recipient" required>
                     </div>
                     <input type="submit" value="Encrypt" class="btn btn-primary">                
                 </form>            

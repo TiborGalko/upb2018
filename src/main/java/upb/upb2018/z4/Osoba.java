@@ -52,7 +52,13 @@ public class Osoba implements Serializable {
     @Column(name = "SALT")
     private long salt;
     
-    @OneToMany(mappedBy = "autor", orphanRemoval = true)
+    @Column(name = "PUBKEY",columnDefinition="LONGTEXT")
+    private String pubKey;
+    
+    @Column(name = "PRIVKEY",columnDefinition="LONGTEXT")
+    private String privKey;
+    
+    @OneToMany(mappedBy = "autor", cascade = CascadeType.REMOVE)
     private List<Subor> subory;
      
     @ManyToMany(mappedBy = "zdielajuci", cascade = CascadeType.REMOVE)
@@ -63,10 +69,12 @@ public class Osoba implements Serializable {
     
     public Osoba() {        
     }    
-    public Osoba(String login, String password, long salt) {
+    public Osoba(String login, String password, long salt, String pubKey, String privKey) {
         this.login = login;
         this.password = password;
         this.salt = salt;
+        this.pubKey = pubKey;
+        this.privKey = privKey;
         subory = new ArrayList<>();
         zdielaneSubory = new ArrayList<>();
         komentare = new ArrayList<>();
@@ -128,6 +136,14 @@ public class Osoba implements Serializable {
         this.komentare = komentare;
     } 
 
+    public String getPubKey() {
+        return pubKey;
+    }
+    
+    public String getPrivKey() {
+        return privKey;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 3;

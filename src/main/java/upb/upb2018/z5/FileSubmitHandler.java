@@ -35,14 +35,10 @@ public class FileSubmitHandler extends HttpServlet {
         //ziskanie login zo session
         String login = (String) session.getAttribute("login");
         Result result = new Result(false, "Chyba");
-        
-        String fileName = escapeHtml(request.getParameter("fileName"));
-        String shareWith = escapeHtml(request.getParameter("share-with"));
+                
         String fileNameComment = escapeHtml(request.getParameter("fileNameComment"));
         String comment = escapeHtml(request.getParameter("comment"));
-        if (fileName != null && !"".equals(fileName) && shareWith != null && !"".equals(shareWith)) {
-            result = share(login, fileName, shareWith);
-        } else if (fileNameComment != null && !"".equals(fileNameComment) && comment != null && !"".equals(comment)) {
+        if (fileNameComment != null && !"".equals(fileNameComment) && comment != null && !"".equals(comment)) {
             result = addComment(login, comment, fileNameComment);
         }
         request.setAttribute("message", result.getMesssage());
@@ -60,50 +56,5 @@ public class FileSubmitHandler extends HttpServlet {
             System.out.println(ex);
         }
         return result;
-    }
-
-    /**
-     * Metoda prida prijemcu v databaze k suboru podla filename parametra
-     *
-     * @param login username autora
-     * @param fileName nazov suboru
-     * @param prijemcaName username prijemcu
-     * @return Result objekt s hodnotou true false a spravou
-     */
-    private Result share(String login, String fileName, String prijemcaName) {
-        Result result = new Result(false, "Chyba");
-        try {
-            Database db = new Database();
-            Osoba prijemca = db.get(prijemcaName);
-            Osoba autor = db.get(login);
-            result = checkExistence(autor, prijemca);
-            if (result.isResult() == false) {
-                return result;
-            }
-            //String newFileName = db.checkFileName(fileName);
-            result = db.addPrijemcaToFile(fileName, prijemca);
-            if (result.isResult() == false) {
-                return result;
-            }
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
-        return result;
-    }
-
-    /**
-     * Metoda pozrie ci autor a prijemca existuju
-     *
-     * @param autor username autora
-     * @param prijemca username prijemcu
-     * @return Result object s true/false a spravou
-     */
-    private Result checkExistence(Osoba autor, Osoba prijemca) {
-        if (autor == null) {
-            return new Result(false, "Nespravny autor");
-        } else if (prijemca == null) {
-            return new Result(false, "Prijemca neexistuje");
-        }
-        return new Result(true, "Check uspesny");
-    }
+    }   
 }

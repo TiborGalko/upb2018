@@ -90,8 +90,7 @@ public class Database {
     }
 
     public Osoba get(String meno) {
-        Result r = find(meno);
-        System.out.println(r.getMesssage());
+        Result r = find(meno);   
         if (r.isResult()) {
             return r.getOsoba();
         } else {
