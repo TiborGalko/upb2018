@@ -24,7 +24,7 @@ import upb.upb2018.z4.Database.Result;
  */
 public class FileTableHandler extends HttpServlet {
 
-    private final String UPLOAD_DIRECTORY = "/usr/local/upb2018";
+    private final String UPLOAD_DIRECTORY = "usr/local/upb2018";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

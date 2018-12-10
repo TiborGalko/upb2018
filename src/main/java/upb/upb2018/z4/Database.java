@@ -169,7 +169,7 @@ public class Database {
 
     public Result deleteFile(String filename) {
         if (filename == null) {
-            return new Result(false, "Zle zadane argumenty"); //osetrenie aby sa nezapisovali blbosti do db
+            return new Result(false, "Zle zadane argumenty");
         }
         try {
             em = emf.createEntityManager();
@@ -177,11 +177,15 @@ public class Database {
             q.setParameter("nazov", filename);
             Subor s;
             if (q.getResultList().size() > 0) {
-                s = q.getResultList().get(0);
+                s = q.getResultList().get(0);                                
                 em.getTransaction().begin();
+                for(Komentar k : s.getKomentare()) {                                                         
+                    em.remove(em.find(Komentar.class,k.getId()));                    
+                }
                 em.remove(s);
                 em.getTransaction().commit();
             }
+            
         } catch (Exception e) {
             System.err.println("Pri nacitani suborov z databazy nastala chyba " + e.getLocalizedMessage());
             em.getTransaction().rollback();
@@ -224,11 +228,10 @@ public class Database {
         
         Subor s = getFile(escapedFileName);
         Komentar k = new Komentar();
-        k.setAutor(autor);
         k.setParent(s);
         k.setDatum(new Date());
         k.setObsah(escapedKomentar);
-        autor.getKomentare().add(k);
+        s.getKomentare().add(k);
         persist(k);
         return new Result(true, "Komentar pridany");
     }

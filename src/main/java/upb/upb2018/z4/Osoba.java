@@ -21,7 +21,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import upb.upb2018.z5.Komentar;
 import upb.upb2018.z5.Subor;
 
 /**
@@ -58,14 +57,11 @@ public class Osoba implements Serializable {
     @Column(name = "PRIVKEY",columnDefinition="LONGTEXT")
     private String privKey;
     
-    @OneToMany(mappedBy = "autor", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "autor", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Subor> subory;
      
-    @ManyToMany(mappedBy = "zdielajuci", cascade = CascadeType.REMOVE)
+    @ManyToMany(mappedBy="zdielajuci")        
     private List<Subor> zdielaneSubory;
-    
-    @OneToMany(mappedBy = "autor")
-    private List<Komentar> komentare;
     
     public Osoba() {        
     }    
@@ -77,7 +73,6 @@ public class Osoba implements Serializable {
         this.privKey = privKey;
         subory = new ArrayList<>();
         zdielaneSubory = new ArrayList<>();
-        komentare = new ArrayList<>();
     }  
 
     public Long getId() {
@@ -127,14 +122,6 @@ public class Osoba implements Serializable {
     public void setZdielaneSubory(List<Subor> zdielaneSubory) {
         this.zdielaneSubory = zdielaneSubory;
     }   
-        
-    public List<Komentar> getKomentare() {
-        return komentare;
-    }
-
-    public void setKomentare(List<Komentar> komentare) {
-        this.komentare = komentare;
-    } 
 
     public String getPubKey() {
         return pubKey;
@@ -183,7 +170,7 @@ public class Osoba implements Serializable {
 
     @Override
     public String toString() {
-        return "Osoba{" + "id=" + id + ", login=" + login + ", password=" + password + ", salt=" + salt + ", subory=" + subory + ", zdielaneSubory=" + zdielaneSubory + ", komentare=" + komentare + '}';
+        return "Osoba{" + "id=" + id + ", login=" + login + '}';
     }    
   
 }

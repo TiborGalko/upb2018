@@ -12,6 +12,7 @@ import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -49,13 +50,13 @@ public class Subor implements Serializable {
     @ManyToOne()
     private Osoba autor;
 
-    @ManyToMany
+    @ManyToMany()
     @JoinTable(name = "ZDIELANE_SUBORY",
             joinColumns = @JoinColumn(name = "subor_fk"),
             inverseJoinColumns = @JoinColumn(name = "osoba_fk"))
     private List<Osoba> zdielajuci;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "parent" ,cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Komentar> komentare;
 
     public Subor() {

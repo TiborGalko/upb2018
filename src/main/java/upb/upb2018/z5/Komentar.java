@@ -8,6 +8,7 @@ package upb.upb2018.z5;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,8 +30,7 @@ import upb.upb2018.z4.Osoba;
 @NamedQueries({
     @NamedQuery(name = "Komentar.findAll", query = "SELECT k FROM Komentar k")
     , @NamedQuery(name = "Komentar.findById", query = "SELECT k FROM Komentar k WHERE k.id = :id")
-    , @NamedQuery(name = "Komentar.findByObsah", query = "SELECT k FROM Komentar k WHERE k.obsah LIKE :pattern")
-    , @NamedQuery(name = "Komentar.findByAutor", query = "SELECT k FROM Komentar k WHERE k.autor = :autor")})
+    , @NamedQuery(name = "Komentar.findByObsah", query = "SELECT k FROM Komentar k WHERE k.obsah LIKE :pattern")})
 public class Komentar implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -46,10 +46,7 @@ public class Komentar implements Serializable {
     @Column(name = "OBSAH")
     private String obsah;
 
-    @ManyToOne()
-    private Osoba autor;
-
-    @ManyToOne()
+    @ManyToOne(cascade=CascadeType.REMOVE)
     private Subor parent;
 
     public Long getId() {
@@ -76,14 +73,6 @@ public class Komentar implements Serializable {
         this.obsah = obsah;
     }
 
-    public Osoba getAutor() {
-        return autor;
-    }
-
-    public void setAutor(Osoba autor) {
-        this.autor = autor;
-    }
-
     public Subor getParent() {
         return parent;
     }
@@ -97,9 +86,7 @@ public class Komentar implements Serializable {
         int hash = 7;
         hash = 79 * hash + Objects.hashCode(this.id);
         hash = 79 * hash + Objects.hashCode(this.datum);
-        hash = 79 * hash + Objects.hashCode(this.obsah);
-        hash = 79 * hash + Objects.hashCode(this.autor);
-        hash = 79 * hash + Objects.hashCode(this.parent);
+        hash = 79 * hash + Objects.hashCode(this.obsah);             
         return hash;
     }
 
@@ -123,10 +110,7 @@ public class Komentar implements Serializable {
         }
         if (!Objects.equals(this.datum, other.datum)) {
             return false;
-        }
-        if (!Objects.equals(this.autor, other.autor)) {
-            return false;
-        }
+        }       
         if (!Objects.equals(this.parent, other.parent)) {
             return false;
         }
@@ -135,7 +119,7 @@ public class Komentar implements Serializable {
 
     @Override
     public String toString() {
-        return "Komentar{" + "id=" + id + ", datum=" + datum + ", obsah=" + obsah + ", autor=" + autor + ", parent=" + parent + '}';
+        return "Komentar{" + "id=" + id + ", datum=" + datum + ", obsah=" + obsah + ", parent=" + parent + '}';
     }
 
 }

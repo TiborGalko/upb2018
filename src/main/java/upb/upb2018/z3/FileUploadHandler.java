@@ -36,7 +36,7 @@ import upb.upb2018.z5.Subor;
  */
 public class FileUploadHandler extends HttpServlet {
 
-    private final String UPLOAD_DIRECTORY = "/usr/local/upb2018";
+    private final String UPLOAD_DIRECTORY = "usr/local/upb2018";
 
     private enum Mode {
         ENCRYPT,
@@ -119,7 +119,7 @@ public class FileUploadHandler extends HttpServlet {
                     if (!error) {
                         System.out.println("encrypting file " + encrypted.getAbsolutePath());
                         CryptoUtils.encryptAES(rsaPK, temp, encrypted);
-
+                        deletePlainFile(temp);
                         // ulozenie zasifrovaneho suboru do databazy
                         result = db.saveFileToDB(aktualnyUser, filenameInDb);
                         if (result.isResult() == false) {
@@ -185,10 +185,12 @@ public class FileUploadHandler extends HttpServlet {
             if (decFilename != null && !"#".equals(decFilename) && !"".equals(decFilename) && !decFilename.contains("//") && !decFilename.contains("\\")) {
                 Subor s = db.getFile(decFilename);
                 String autorLogin = s.getAutor().getLogin();
-                File file = new File(UPLOAD_DIRECTORY + File.separator + autorLogin + File.separator + decFilename);
+                File file = new File(UPLOAD_DIRECTORY + File.separator + autorLogin + File.separator + decFilename + ".enc");
+                System.err.println("Downloading file " +file.getAbsolutePath());
+                System.err.println("For user " + aktualnyUser);
                 if (file.exists() && aktualnyUser != null) {
                     try {
-                        File decrypted = new File(UPLOAD_DIRECTORY + File.separator + autorLogin + File.separator + decFilename.substring(0, decFilename.length() - 4));
+                        File decrypted = new File(UPLOAD_DIRECTORY + File.separator + autorLogin + File.separator + decFilename);
                         Path p = FileSystems.getDefault().getPath(decrypted.getAbsolutePath());
                         // Create the empty file with default permissions, etc.
                         Files.createFile(p);
