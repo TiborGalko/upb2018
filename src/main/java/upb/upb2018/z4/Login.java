@@ -25,24 +25,24 @@ public class Login extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String login = request.getParameter("login");
-        String password = request.getParameter("password");
-
-        try {
-            Result result = prihlasovanie(login, password);
-            System.out.println(result.getMesssage());
-            if (result.isResult()) {
-                //vytvorenie session
-                HttpSession session = request.getSession(true);
-                session.setAttribute("login", login);
-                response.sendRedirect("encrypt");
-                //request.setAttribute("message", result.getMesssage());
-            } else {                
-                request.setAttribute("message", result.getMesssage());
-                request.getRequestDispatcher("/login.jsp").forward(request, response);
+        String login = escapeHtml(request.getParameter("login"));
+        String password = escapeHtml(request.getParameter("password"));
+        if (login != null && !"".equals(login) && password != null && !"".equals(password)) {
+            try {
+                Result result = prihlasovanie(login, password);
+                if (result.isResult()) {
+                    //vytvorenie session
+                    HttpSession session = request.getSession(true);
+                    session.setAttribute("login", login);
+                    response.sendRedirect("encrypt");
+                    //request.setAttribute("message", result.getMesssage());
+                } else {
+                    request.setAttribute("message", result.getMesssage());
+                    request.getRequestDispatcher("/login.jsp").forward(request, response);
+                }
+            } catch (Exception ex) {
+                System.err.println("Pri prihlasovani nastala chyba " + ex.getLocalizedMessage());
             }
-        } catch (Exception ex) {
-            System.err.println("Pri prihlasovani nastala chyba " + ex.getLocalizedMessage());
         }
     }
 
@@ -55,12 +55,10 @@ public class Login extends HttpServlet {
      */
     public Result prihlasovanie(String meno, String heslo) throws NoSuchAlgorithmException {
         Database db = new Database();
-        escapeHtml(meno);
-        escapeHtml(heslo);
         Osoba user = db.get(meno);
         if (user == null) {
             return new Result(false, "Uzivatel neexistuje");
-        }        
+        }
         String hashedSaltedPass = Security.mixPasswordAndSaltAndHash(heslo, user.getSalt());
         System.out.println(hashedSaltedPass);
         if (Security.compareTwoStrings(hashedSaltedPass, user.getPassword())) {

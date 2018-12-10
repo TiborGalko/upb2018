@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 import upb.upb2018.z4.Database;
 import upb.upb2018.z4.Database.Result;
 import upb.upb2018.z4.Osoba;
@@ -75,7 +76,7 @@ public class FileUploadHandler extends HttpServlet {
                 String rsaPK = null;
 
                 //ci vsetky testy presli a sprava ktora sa vypise v pripade chyby                    
-                Result result;
+                Result result = new Result(false, "Neocakavana chyba");
 
                 if (mode == Mode.ENCRYPT) {
 
@@ -86,37 +87,39 @@ public class FileUploadHandler extends HttpServlet {
                             if (name.contains("/") || name.contains("\\")) {
                                 error = true;
                                 break;
-                            }                           
+                            }
 
-                            temp = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin() + File.separator + name + "-temp");                            
+                            temp = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin() + File.separator + name + "-temp");
                             Path p = FileSystems.getDefault().getPath(temp.getAbsolutePath());
                             if (!Files.exists(p)) {
                                 temp.getParentFile().mkdirs();
                             }
                             item.write(temp); // zapisanie suboru do docasneho suboru                            
-                            
-                            String newFileName = db.checkFileName(name);                            
+
+                            String newFileName = db.checkFileName(name);
                             encrypted = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin() + File.separator + newFileName + ".enc");
                             //System.out.println("Enc encrypted " + encrypted.getName() + " temp " + temp.getName());
                             filename = encrypted.getName();
-                                                        
-                            // ulozenie zasifrovaneho suboru do databazy
 
-                            result = db.saveFileToDB(autor, newFileName);                            
+                            // ulozenie zasifrovaneho suboru do databazy
+                            result = db.saveFileToDB(autor, newFileName);
                             System.err.println(result.getMesssage());
                         } else {
                             if (item.getFieldName().equals("enc-rsa-pk")) {
-                                rsaPK = item.getString(); //nacitanie rsa public kluca z textfieldu stranky
+                                rsaPK = item.getString(); //nacitanie rsa public kluca z textfieldu stranky                                 
                             }
                         }
                     }
                     if (!error) {
                         CryptoUtils.encryptAES(rsaPK, temp, encrypted);
                         deletePlainFile(temp);
+                    } else {
+                        request.setAttribute("message", result.getMesssage());
+                        request.getRequestDispatcher("/encrypt.jsp").forward(request, response);
                     }
                 } else {
                     for (FileItem item : multiparts) {
-                        if (!item.isFormField()) {            
+                        if (!item.isFormField()) {
                             String name = new File(item.getName()).getName();
                             if (name.contains("/") || name.contains("\\")) {
                                 error = true;
@@ -139,6 +142,9 @@ public class FileUploadHandler extends HttpServlet {
                     if (!error) {
                         CryptoUtils.decryptAES(rsaPK, temp, decrypted);
                         deletePlainFile(temp);
+                    } else {
+                        request.setAttribute("message", "File Enc/Dec Failed");
+                        request.getRequestDispatcher("/decrypt.jsp").forward(request, response);
                     }
                 }
                 //File uploaded successfully
@@ -148,7 +154,7 @@ public class FileUploadHandler extends HttpServlet {
             }
             if (!error) {
                 File file = new File(UPLOAD_DIRECTORY + File.separator + autor.getLogin(), filename);
-                
+                                
                 response.setHeader("Content-Type", getServletContext().getMimeType(filename));
                 response.setHeader("Content-Length", String.valueOf(file.length()));
                 response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
@@ -156,16 +162,18 @@ public class FileUploadHandler extends HttpServlet {
                 if (mode == Mode.DECRYPT) {
                     deletePlainFile(file);
                 }
+                
             }
         } else {
-            String decFilename = request.getParameter("dec-filename");
-            String rsaPK = request.getParameter("dec-rsa-pk-file");
-            if ((decFilename != null && !"#".equals(decFilename) && !decFilename.contains("//") && !decFilename.contains("\\")) && (rsaPK != null)) {
+            String decFilename = escapeHtml(request.getParameter("dec-filename"));
+            String rsaPK = request.getParameter("dec-rsa-pk-file");   
+            if (decFilename != null && !"#".equals(decFilename) && !"".equals(decFilename)
+                    && !decFilename.contains("//") && !decFilename.contains("\\") && rsaPK != null
+                    && !"#".equals(rsaPK) && !"".equals(rsaPK)) {                
                 Database db = new Database();
                 Subor s = db.getFile(decFilename);
                 String autorLogin = s.getAutor().getLogin();
-                File file = new File(UPLOAD_DIRECTORY + File.separator + autorLogin + File.separator + decFilename); // TODO mozna hrozba
-
+                File file = new File(UPLOAD_DIRECTORY + File.separator + autorLogin + File.separator + decFilename);
                 if (file.exists()) {
                     try {
                         File decrypted = new File(UPLOAD_DIRECTORY + File.separator + autorLogin + File.separator + decFilename.substring(0, decFilename.length() - 4));

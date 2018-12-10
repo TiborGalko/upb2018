@@ -12,31 +12,31 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 import upb.upb2018.z4.Database.Result;
 
 public class Registration extends HttpServlet {
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String login = request.getParameter("login");
-        String password = request.getParameter("password");
-        
-        System.out.println(login + " " + password );
-        
-        try {
-            Result result = registracia(login, password);
-            System.out.println(result.getMesssage());
-            if (result.isResult()) {
-                //vytvorenie session
-                //request.getSession(true);
-                request.setAttribute("message", result.getMesssage());
-                request.getRequestDispatcher("/login.jsp").forward(request, response);                
-            } else {                
-                request.setAttribute("message", result.getMesssage());
-                request.getRequestDispatcher("/register.jsp").forward(request, response);
+        String login = escapeHtml(request.getParameter("login"));
+        String password = escapeHtml(request.getParameter("password"));
+        if (login != null && !"".equals(login) && password != null && !"".equals(password)) {
+            try {
+                Result result = registracia(login, password);               
+                if (result.isResult()) {
+                    //vytvorenie session
+                    //request.getSession(true);
+                    request.setAttribute("message", result.getMesssage());
+                    request.getRequestDispatcher("/login.jsp").forward(request, response);
+                } else {
+                    request.setAttribute("message", result.getMesssage());
+                    request.getRequestDispatcher("/register.jsp").forward(request, response);
+                }
+            } catch (IOException | NoSuchAlgorithmException | ServletException ex) {
+                System.err.println("Pri registracii nastala chyba " + ex.getLocalizedMessage());
             }
-        } catch (IOException | NoSuchAlgorithmException | ServletException ex) {
-            System.err.println("Pri registracii nastala chyba " + ex.getLocalizedMessage());
         }
     }
 
@@ -52,11 +52,11 @@ public class Registration extends HttpServlet {
         String hashedSaltedPass = Security.mixPasswordAndSaltAndHash(heslo, salt);
         Osoba user = new Osoba(meno, hashedSaltedPass, salt);
         Result r = db.add(user);
-        if(r.isResult()) {
-            return new Result(true, "Uzivatel uspesne vytvoreny");            
+        if (r.isResult()) {
+            return new Result(true, "Uzivatel uspesne vytvoreny");
         } else {
-            return new Result(false, "Uzivatela sa nepodarilo vytvorit " + r.getMesssage()); 
-        }        
+            return new Result(false, "Uzivatela sa nepodarilo vytvorit " + r.getMesssage());
+        }
     }
 
 }

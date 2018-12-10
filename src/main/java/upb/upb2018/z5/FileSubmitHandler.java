@@ -35,23 +35,27 @@ public class FileSubmitHandler extends HttpServlet {
         //ziskanie login zo session
         String login = (String) session.getAttribute("login");
         Result result = new Result(false, "Chyba");
-        if (request.getParameter("fileName") != null && request.getParameter("share-with") != null) {
-            result = share(login, request.getParameter("fileName"), request.getParameter("share-with"));
-        } else if (request.getParameter("fileNameComment") != null && request.getParameter("comment") != null) {
-            result = addComment(login, request.getParameter("comment"), request.getParameter("fileNameComment"));
+        
+        String fileName = escapeHtml(request.getParameter("fileName"));
+        String shareWith = escapeHtml(request.getParameter("share-with"));
+        String fileNameComment = escapeHtml(request.getParameter("fileNameComment"));
+        String comment = escapeHtml(request.getParameter("comment"));
+        if (fileName != null && !"".equals(fileName) && shareWith != null && !"".equals(shareWith)) {
+            result = share(login, fileName, shareWith);
+        } else if (fileNameComment != null && !"".equals(fileNameComment) && comment != null && !"".equals(comment)) {
+            result = addComment(login, comment, fileNameComment);
         }
-        System.out.println(result.getMesssage());
         request.setAttribute("message", result.getMesssage());
         request.getRequestDispatcher("/decrypt.jsp").forward(request, response);
     }
 
     private Result addComment(String login, String komentar, String fileName) {
         Result result = new Result(false, "Chyba");
-        escapeHtml(komentar);
+        String escaped = escapeHtml(komentar);
         try {
             Database db = new Database();
             Osoba autor = db.get(login);
-            result = db.addComment(fileName, komentar, autor);
+            result = db.addComment(fileName, escaped, autor);
         } catch (Exception ex) {
             System.out.println(ex);
         }

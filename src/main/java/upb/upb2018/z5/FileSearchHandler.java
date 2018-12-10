@@ -7,7 +7,6 @@ package upb.upb2018.z5;
 
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -30,14 +29,14 @@ public class FileSearchHandler extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         String login = (String) session.getAttribute("login");
-        String searchvyraz = request.getParameter("search");
-        escapeHtml(searchvyraz);
-        if (searchvyraz != null) {
+        String searchvyraz = escapeHtml(request.getParameter("search"));
+        if (searchvyraz != null && !"".equals(searchvyraz)) {
             Database db = new Database();
             List<String> list = db.getSearch(login, searchvyraz);
             String json = new Gson().toJson(list);
             response.setContentType("text/plain");
             response.getWriter().write(json);
+
         }
     }
 }

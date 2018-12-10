@@ -15,6 +15,7 @@ import upb.upb2018.z4.*;
 import com.google.gson.Gson;
 import java.io.File;
 import java.util.List;
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 import upb.upb2018.z4.Database.Result;
 
 /**
@@ -41,12 +42,12 @@ public class FileTableHandler extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String fileName = request.getParameter("fileName");
-        String deleteFileName = request.getParameter("deleteFile");
+        String fileName = escapeHtml(request.getParameter("fileName"));
+        String deleteFileName = escapeHtml(request.getParameter("deleteFile"));
 
-        if (fileName != null) {
+        if (fileName != null && !"".equals(fileName)) {
             Database db = new Database();
-            //TODO zranitelnost
+            
             List<String> list = db.getAllCommentsByFileName(fileName);
             if (list.size() > 0) {
                 String json = new Gson().toJson(list);

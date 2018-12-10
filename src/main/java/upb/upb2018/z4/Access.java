@@ -24,11 +24,7 @@ public class Access extends HttpServlet {
                 request.getRequestDispatcher("/encrypt.jsp").forward(request, response);
             } else if(request.getRequestURL().toString().contains("decrypt")){
                 request.getRequestDispatcher("/decrypt.jsp").forward(request, response);
-            } else if(request.getRequestURL().toString().contains("submit")){
-                request.getRequestDispatcher("/submit.jsp").forward(request, response);
-            }  else if(request.getRequestURL().toString().contains("share")){
-                request.getRequestDispatcher("/share.jsp").forward(request, response);
-            }                               
+            }                           
         } else {
             request.getRequestDispatcher("/login.jsp").forward(request, response);
         }            

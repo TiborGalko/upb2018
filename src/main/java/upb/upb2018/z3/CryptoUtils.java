@@ -39,6 +39,10 @@ public class CryptoUtils {
     private static String TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
     public static void encryptAES(String rsaPK, File inputFile, File outputFile) throws Exception {
+        if(rsaPK == null || "".equals(rsaPK) || inputFile == null || outputFile == null) {
+            throw new IllegalArgumentException();
+        }
+        
         ALGORITHM = "AES";
         TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
@@ -52,6 +56,9 @@ public class CryptoUtils {
     }
 
     public static void decryptAES(String rsaPK, File inputFile, File outputFile) throws Exception {
+        if(rsaPK == null || "".equals(rsaPK) ||  inputFile == null || outputFile == null) {
+            throw new IllegalArgumentException();
+        }
         ALGORITHM = "AES";
         TRANSFORMATION = "AES/CBC/PKCS5Padding";
         

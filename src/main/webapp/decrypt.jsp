@@ -136,7 +136,7 @@
                 <h3>Choose file to decrypt or pick from table</h3>
                 <form action="upload" method="post" enctype="multipart/form-data">
                     <div class="form-group">
-                        <input type="file" name="dec-file">
+                        <input type="file" name="dec-file" required>
                     </div>
                     <div class="form-group">
                         <label for="dec-rsa-pk">RSA private key:</label>

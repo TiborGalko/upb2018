@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 import upb.upb2018.z5.Komentar;
 import upb.upb2018.z5.Subor;
 
@@ -115,7 +116,7 @@ public class Database {
         } else {
             out = null;
         }
-        System.out.println("Ziskava sa subor " + meno + " vysledok " + out);
+        //System.out.println("Ziskava sa subor " + meno + " vysledok " + out);
         entityManager.close();
         return out;
     }
@@ -216,15 +217,18 @@ public class Database {
     }
 
     public Result addComment(String filename, String komentar, Osoba autor) {
-        if (filename == null || komentar == null) {
+        if (filename == null || komentar == null || "".equals(komentar) || "".equals(filename)) {
             return new Result(false, "Zle parametre");
         }
-        Subor s = getFile(filename);
+        String escapedKomentar = escapeHtml(komentar);
+        String escapedFileName = escapeHtml(filename);
+        
+        Subor s = getFile(escapedFileName);
         Komentar k = new Komentar();
         k.setAutor(autor);
         k.setParent(s);
         k.setDatum(new Date());
-        k.setObsah(komentar);
+        k.setObsah(escapedKomentar);
         autor.getKomentare().add(k);
         persist(k);
         return new Result(true, "Komentar pridany");
@@ -245,8 +249,8 @@ public class Database {
 
         if (s != null) {
             TypedQuery<Komentar> q = entityManager.createNamedQuery("Komentar.findAll", Komentar.class);
-            if (q.getResultList().size() > 0) {
-                for (Komentar k : q.getResultList()) {
+            if (q.getResultList().size() > 0) {                
+                for (Komentar k : q.getResultList()) {                         
                     if (k.getParent().equals(s)) {
                         list.add(k.getObsah());
                     }
@@ -267,18 +271,22 @@ public class Database {
     public List<String> getSearch(String login, String search) {
         List<String> ret = new ArrayList();
         EntityManager entityManager;
-        entityManager = emf.createEntityManager();
+        entityManager = emf.createEntityManager();      
+        
+        String escapedLogin = escapeHtml(login);
+        String escapedSearch = escapeHtml(search);
+        
         // komentar obsahujuci hladany vyraz
         TypedQuery<Komentar> q = entityManager.createNamedQuery("Komentar.findByObsah", Komentar.class);
-        q.setParameter("pattern", '%' + search + '%');
+        q.setParameter("pattern", '%' + escapedSearch + '%');
         if (q.getResultList().size() > 0) {
             for (Komentar k : q.getResultList()) {
-                if (k.getParent().getAutor().getLogin().equals(login)) {
+                if (k.getParent().getAutor().getLogin().equals(escapedLogin)) {
                     ret.add(k.getParent().getNazov());
                 } else {
                     List<Osoba> osoby = k.getParent().getZdielajuci();
                     for (Osoba o : osoby) {
-                        if (o.getLogin().equals(login)) {
+                        if (o.getLogin().equals(escapedLogin)) {
                             ret.add(k.getParent().getNazov());
                         }
                     }
@@ -288,15 +296,15 @@ public class Database {
         }
         // Prida aj subory ktore maju v nazve hladany vyraz
         TypedQuery<Subor> q1 = entityManager.createNamedQuery("Subor.findByLike", Subor.class);
-        q1.setParameter("pattern", '%' + search + '%');
+        q1.setParameter("pattern", '%' + escapedSearch + '%');
         if (q1.getResultList().size() > 0) {
             for (Subor s : q1.getResultList()) {
-                if (s.getAutor().getLogin().equals(login)) {
+                if (s.getAutor().getLogin().equals(escapedLogin)) {
                     ret.add(s.getNazov());
                 } else {
                     List<Osoba> o = s.getZdielajuci();
                     for (Osoba os : o) {
-                        if (os.getLogin().equals(login)) {
+                        if (os.getLogin().equals(escapedLogin)) {
                             ret.add(s.getNazov());
                         }
                     }
@@ -316,9 +324,9 @@ public class Database {
         while (getFile(newName) != null) {
             tokens = newName.split("\\."); // rozdeli cez bodky
             if (i > 1) {
-                tokens[0] = tokens[0].substring(0, tokens[0].length() - 4); // odstrani cislovanie ak bolo pridane
+                tokens[0] = tokens[0].substring(0, tokens[0].length() - 3); // odstrani cislovanie ak bolo pridane
             }
-            tokens[0] += " (" + i + ")";
+            tokens[0] += "(" + i + ")";
 
             for (int j = 0; j < tokens.length; j++) {
                 builder.append(tokens[j]); // vytvori novy string
