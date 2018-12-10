@@ -40,6 +40,7 @@ public class CryptoUtils {
 
     public static void encryptAES(String rsaPK, File inputFile, File outputFile) throws Exception {
         if(rsaPK == null || "".equals(rsaPK) || inputFile == null || outputFile == null) {
+            System.err.print("Illegal arguments encrypt");
             throw new IllegalArgumentException();
         }
         
@@ -112,6 +113,7 @@ public class CryptoUtils {
             FileUtils.writeByteArrayToFile(outputFile, out);
 
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | IOException ex) {
+            System.err.print(ex.getLocalizedMessage());
             throw new Exception("Error encrypting / decrypting file" + ex.getMessage());
         }
     }
@@ -130,6 +132,7 @@ public class CryptoUtils {
             FileUtils.writeByteArrayToFile(outputFile, outputBytes);
 
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | IOException ex) {
+            System.err.print(ex.getLocalizedMessage());
             throw new Exception("Error encrypting / decrypting file" + ex.getMessage());
         }
     }

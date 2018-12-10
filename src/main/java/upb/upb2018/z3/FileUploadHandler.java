@@ -37,7 +37,7 @@ import upb.upb2018.z5.Subor;
 public class FileUploadHandler extends HttpServlet {
 
     private final String UPLOAD_DIRECTORY = "/usr/local/upb2018";
-    
+
     private enum Mode {
         ENCRYPT,
         DECRYPT
@@ -58,7 +58,9 @@ public class FileUploadHandler extends HttpServlet {
         if (ServletFileUpload.isMultipartContent(request)) {
             String filename = "";
             Mode mode = Mode.ENCRYPT;
-            
+            //ci vsetky testy presli a sprava ktora sa vypise v pripade chyby                    
+            Result result = new Result(false, "Neocakavana chyba");
+
             // generovanie filename ktory neni v databaze
             try {
                 List<FileItem> multiparts = new ServletFileUpload(
@@ -76,9 +78,6 @@ public class FileUploadHandler extends HttpServlet {
                 String recipient = null;
                 String filenameInDb = null;
 
-                //ci vsetky testy presli a sprava ktora sa vypise v pripade chyby                    
-                Result result = new Result(false, "Neocakavana chyba");
-
                 if (mode == Mode.ENCRYPT) {
 
                     for (FileItem item : multiparts) {
@@ -86,12 +85,14 @@ public class FileUploadHandler extends HttpServlet {
                             String name = new File(item.getName()).getName();
                             name = escapeHtml(name);
                             if (name.contains("/") || name.contains("\\")) {
+                                result.setMesssage("Name in file enc is not correct");
                                 error = true;
                                 break;
                             }
                             temp = new File(UPLOAD_DIRECTORY + File.separator + aktualnyUser.getLogin() + File.separator + name + "-temp");
                             Path p = FileSystems.getDefault().getPath(temp.getAbsolutePath());
                             if (!Files.exists(p)) {
+                                System.out.println("File not exists " + p);
                                 temp.getParentFile().mkdirs();
                             }
                             item.write(temp); // zapisanie suboru do docasneho suboru                            
@@ -101,11 +102,6 @@ public class FileUploadHandler extends HttpServlet {
                             System.out.println("Enc encrypted " + encrypted.getName() + " temp " + temp.getName());
                             filename = encrypted.getName();
 
-                            // ulozenie zasifrovaneho suboru do databazy
-                            result = db.saveFileToDB(aktualnyUser, filenameInDb);
-                            if (result.isResult() == false) {
-                                error = true;
-                            }
                             System.err.println(result.getMesssage());
                         } else {
                             if (item.getFieldName().equals("enc-recipient")) {
@@ -114,13 +110,22 @@ public class FileUploadHandler extends HttpServlet {
                                 if (o != null) {
                                     rsaPK = o.getPubKey(); //nacitanie rsa public kluca od usera
                                 } else {
+                                    result.setMesssage("Recipient neexistuje");
                                     error = true;
                                 }
                             }
                         }
                     }
                     if (!error) {
-                        CryptoUtils.encryptAES(rsaPK, temp, encrypted);                        
+                        System.out.println("encrypting file " + encrypted.getAbsolutePath());
+                        CryptoUtils.encryptAES(rsaPK, temp, encrypted);
+
+                        // ulozenie zasifrovaneho suboru do databazy
+                        result = db.saveFileToDB(aktualnyUser, filenameInDb);
+                        if (result.isResult() == false) {
+                            error = true;
+                        }
+
                         if (filename != null && !"".equals(filename)) {
                             result = share(login, filenameInDb, recipient);
                             if (result.isResult() == false) {
@@ -136,6 +141,7 @@ public class FileUploadHandler extends HttpServlet {
                         if (!item.isFormField()) {
                             String name = new File(item.getName()).getName();
                             if (name.contains("/") || name.contains("\\")) {
+                                result.setMesssage("Name in file dec is not correct");
                                 error = true;
                                 break;
                             }
@@ -171,10 +177,11 @@ public class FileUploadHandler extends HttpServlet {
                     deletePlainFile(file);
                 }
             } else {
-                System.err.println("niekde nastala chyba");
+                System.err.println("niekde nastala chyba " + result.getMesssage());
+
             }
         } else {
-            String decFilename = escapeHtml(request.getParameter("dec-filename"));            
+            String decFilename = escapeHtml(request.getParameter("dec-filename"));
             if (decFilename != null && !"#".equals(decFilename) && !"".equals(decFilename) && !decFilename.contains("//") && !decFilename.contains("\\")) {
                 Subor s = db.getFile(decFilename);
                 String autorLogin = s.getAutor().getLogin();
@@ -198,14 +205,10 @@ public class FileUploadHandler extends HttpServlet {
                         request.setAttribute("message", "File Dec File Failed due to " + ex);
                     }
                 } else {
-                    error = true;
                     request.setAttribute("message", "File doesnt exist or user is not in database");
+                    request.getRequestDispatcher("/encrypt.jsp").forward(request, response);
                 }
-                
             }
-        }
-        if(error) {
-            request.getRequestDispatcher("/encrypt.jsp").forward(request, response);
         }
     }
 
@@ -262,9 +265,9 @@ public class FileUploadHandler extends HttpServlet {
     private void deletePlainFile(File file) {
         try {
             if (file.delete()) {
-                //System.out.println(file.getName() + " is deleted!");
+                System.out.println(file.getName() + " is deleted!");
             } else {
-                //System.out.println("Delete operation is failed.");
+                System.out.println("Delete operation is failed.");
             }
 
         } catch (Exception e) {
