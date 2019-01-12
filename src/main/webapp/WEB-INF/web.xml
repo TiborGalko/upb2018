@@ -32,6 +32,10 @@
         <servlet-name>FileSearchHandler</servlet-name>
         <servlet-class>upb.upb2018.z5.FileSearchHandler</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GenerateKeys</servlet-name>
+        <servlet-class>upb.upb2018.z5.GenerateKeys</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>FileSearchHandler</servlet-name>
         <url-pattern>/search</url-pattern>
@@ -68,6 +72,10 @@
         <servlet-name>FileTableHandler</servlet-name>
         <url-pattern>/filetable</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GenerateKeys</servlet-name>
+        <url-pattern>/generatekeys</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
@@ -89,14 +97,5 @@
         </web-resource-collection>
         <auth-constraint>
         </auth-constraint>
-    </security-constraint>
-    <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>upb</web-resource-name>
-            <url-pattern>/*</url-pattern>
-        </web-resource-collection>
-        <user-data-constraint>
-            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-        </user-data-constraint>
     </security-constraint>
 </web-app>
